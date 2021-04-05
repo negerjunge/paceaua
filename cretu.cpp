@@ -4,12 +4,13 @@
 #include <string>
 #include <chrono>
 #include <SDL2/SDL_ttf.h>
-extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
-#include <libavutil/mathematics.h>
-}
+extern "C" 
+          {
+            #include <libavcodec/avcodec.h>
+            #include <libavformat/avformat.h>
+            #include <libswscale/swscale.h>
+            #include <libavutil/mathematics.h>
+          }
 #include <cstdio>
 #include <cstdint>
 
@@ -47,15 +48,18 @@ int bani()
 
 
 
-
-
-
 int main()
 {
     
     AVCodec * codec = NULL;
     AVCodecContext * codecContext = NULL;
     FILE * porno;
+    porno = fopen("/home/theasspounder/vsc/pacaneav2/paceaua/clipDesfranat/porno.mp4", "r");
+    if(porno == NULL)
+    {
+            std::cout << "aibelitpulacumetre" << std::endl;
+            return 0;
+    }
     AVFrame * pornoFrame;
     AVPacket packet;
     av_init_packet(&packet);
@@ -73,6 +77,10 @@ int main()
         std::cout << "pula" << std::endl;
     }
     pornoFrame == av_frame_alloc();
+    if(pornoFrame == NULL)
+    {
+        std::cout << "nu merge" << std::endl;
+    }
     if(codec -> capabilities &AV_CODEC_CAP_TRUNCATED)
     {
         codecContext -> flags |= AV_CODEC_FLAG_TRUNCATED;
@@ -81,8 +89,35 @@ int main()
     {
             std::cout << "fa urat" << std::endl;
     }
-    
-
+    int framesDecoded;
+    int framesLenght;
+    int gotPic;
+    while(1 == 1)
+    {
+        packet.size = fread(inputBuffer, 1, BUFFER_SIZE, porno);
+        if(packet.size == 0)
+        {
+            break;
+        }
+    packet.data = inputBuffer;
+            while(packet.size > 0)
+            {
+                framesLenght = avcodec_receive_frame(codecContext, pornoFrame);
+                std::cout << "dahai" << std::endl;
+                if(framesLenght < 0)
+                {
+                    std::cout << "numaiammacesaifac" << std::endl;
+                    return 0;
+                }
+                if(gotPic = 0)
+                {
+                    std::cout << "nufrt" << std::endl;
+                }
+            }
+    }
+// myth thingy solve
+//segault framesLenght
+//olaru plange
 
 
 
