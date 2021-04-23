@@ -16,13 +16,13 @@ int belite;
 //de introdus belitele
 
 
-int bani()
+/*int bani()
 {
     int chips = 50000;
     int multiplier[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
     int bet[5] = {250, 500, 1000, 2500, };
-    return 0;
-}
+    
+}*/
 
 uint8_t clipRawOut[4 * 640 * 360];
 
@@ -35,8 +35,17 @@ uint8_t clipRawOut[4 * 640 * 360];
 
 int main()
 {
+    int belite = 50000;
+    int bet = 2500;
+
+
+
+
+
+
+
     FILE * clipOutput;
-    clipOutput = fopen("/home/theasspounder/vsc/paceaua/clipDesfranat/out.bin", "rb"); 
+    clipOutput = fopen("clipDesfranat/out.bin", "rb"); 
     if(!clipOutput) std::cout << "pulapizda" << std::endl;
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     //rez clip 640x360
@@ -47,13 +56,13 @@ int main()
     SDL_Texture *pizdeBune[9] ={};
     SDL_Window *pizdePng;
     SDL_Init(SDL_INIT_VIDEO);
-    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_MAXIMIZED);
+    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
     SDL_Renderer *randat = NULL;
     randat = SDL_CreateRenderer(pizdePng, -1, SDL_RENDERER_ACCELERATED);
     IMG_Init(IMG_INIT_PNG);
     for(int i = 1; i <= 9 ; i++)
     {
-      std::string folderPoze = "/home/theasspounder/vsc/paceaua/pozePacaneaDesfranata/";
+      std::string folderPoze = "pozePacaneaDesfranata/";
       folderPoze = folderPoze + std::to_string(i) + ".png"; 
       SDL_Surface *lemonParty = IMG_Load(folderPoze.c_str());
       if(!lemonParty) std::cout << "pulaMea" << std::endl;
@@ -63,9 +72,12 @@ int main()
     SDL_Rect whores;
      TTF_Init();
      TTF_Font *fontChips;
-     fontChips = TTF_OpenFont("/usr/share/fonts/TTF/Hack-Bold.ttf", 15);
+     fontChips = TTF_OpenFont("/usr/share/fonts/hack/Hack-Bold.ttf", 15);
      SDL_Surface *textChips;
-     textChips =  TTF_RenderText_Solid(fontChips, "Ai Atatea Belite: ", {223, 194, 123});
+     std::string cateBeliteAm;
+     cateBeliteAm = "Ai Atatea Belite: ";
+     cateBeliteAm += std::to_string(belite);
+     textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
      SDL_Texture *texChips;
      texChips = SDL_CreateTextureFromSurface(randat, textChips);
     
@@ -107,8 +119,22 @@ while(1 == 1)
                  std::cout << (char)pimp.key.keysym.sym << std::endl;
                 apasareDeTaste = false;
                  apasareDeTaste != true;
+                 if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_RETURN)
+                 {
+                     std::cout << "penis" << std::endl;
+                    SDL_DestroyTexture(texChips);
+                     SDL_FreeSurface(textChips);
+                     belite -= bet;
+                    cateBeliteAm = "Ai Atatea Belite: ";
+                    cateBeliteAm  += std::to_string(belite);
+                    
+                    textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
+                    texChips = SDL_CreateTextureFromSurface(randat, textChips);
+
+                 }
             }
     }
+    
 
 SDL_RenderClear(randat);
 SDL_Rect whores0;
