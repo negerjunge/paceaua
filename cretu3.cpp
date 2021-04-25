@@ -2,7 +2,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <string>
-#include <chrono>
 #include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <error.h>
@@ -13,7 +12,7 @@
 
 bool apasareDeTaste ;
 int belite;
-//de introdus belitele
+
 
 
 /*int bani()
@@ -25,8 +24,7 @@ int belite;
 }*/
 
 uint8_t clipRawOut[4 * 640 * 360];
-
-
+Uint32 waitTime = 50;
 
 
 
@@ -36,13 +34,15 @@ uint8_t clipRawOut[4 * 640 * 360];
 int main()
 {
     int belite = 50000;
-    int bet = 2500;
-
-
-
-
-
-
+    int bet[4] = {250, 500, 1000, 2500};
+    int betAr = 0;
+    int pozeAr0 = rand() % 9;
+    int pozeAr1 = rand() % 9;
+    int pozeAr2 = rand() % 9;
+    int multi[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
+    
+    srand(time(NULL));
+    
 
     FILE * clipOutput;
     clipOutput = fopen("clipDesfranat/out.bin", "rb"); 
@@ -86,10 +86,21 @@ int main()
     SDL_Texture * textureClip;
     textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
     
+    SDL_Rect whoresBet;
+     SDL_Surface *textelBet;
+     std::string textel1Bet = "Bet Nenorocit: ";
+     textel1Bet += std::to_string(betAr);
+     textelBet =  TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 194, 123});
+     SDL_Texture *texBet;
+     texBet = SDL_CreateTextureFromSurface(randat, textelBet);
 
-
-
-
+     SDL_Rect textWin;
+     SDL_Surface *surfaceWin;
+     std::string stringWin = " ";
+     
+     surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
+     SDL_Texture *textureWin;
+     textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
 
 
 
@@ -124,44 +135,126 @@ while(1 == 1)
                      std::cout << "penis" << std::endl;
                     SDL_DestroyTexture(texChips);
                      SDL_FreeSurface(textChips);
-                     belite -= bet;
+                     belite -= bet[betAr];
                     cateBeliteAm = "Ai Atatea Belite: ";
                     cateBeliteAm  += std::to_string(belite);
                     
                     textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
                     texChips = SDL_CreateTextureFromSurface(randat, textChips);
+                    pozeAr0 = rand() % 9;
+                    pozeAr1 = rand() % 9;
+                    pozeAr2 = rand() % 9;
+                    SDL_DestroyTexture(textureWin);
+                    stringWin = " ";
+                    SDL_FreeSurface(surfaceWin);
+                    surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
+                    textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
+
 
                  }
-            }
+                else if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_LEFT)
+                 {
+                    betAr --;    
+                        if(betAr < 0)
+                        {
+                            betAr = 0;
+                        }                
+                    std::cout << "merge betu coaie" << std::endl;
+                    SDL_DestroyTexture(texBet);
+                    SDL_FreeSurface(textelBet);
+                    textel1Bet = "Bet Nenorocit: ";
+                    textel1Bet += std::to_string(bet[betAr]); 
+                    
+                    textelBet = TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 192, 123});
+                    texBet = SDL_CreateTextureFromSurface(randat, textelBet);
+                 }
+                else if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_RIGHT)
+                 {
+                     betAr ++;
+                     if(betAr == 4)
+                     {
+                         betAr = 0;
+                     }
+                     std::cout << "merge betu coaie" << std::endl;
+                    SDL_DestroyTexture(texBet);
+                    SDL_FreeSurface(textelBet);
+                    textel1Bet = "Bet Nenorocit: ";
+                    textel1Bet += std::to_string(bet[betAr]); 
+                    
+                    textelBet = TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 192, 123});
+                    texBet = SDL_CreateTextureFromSurface(randat, textelBet);
+                 }
+            }   
+
     }
-    
+    if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
+    {
+        
+        stringWin = "Dai La Muie";
+     
+        SDL_DestroyTexture(textureWin);
+        SDL_FreeSurface(surfaceWin);
+
+        surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
+        textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
+    }
+    if(pozeAr0 == 1 && pozeAr1 == 1 && pozeAr2 == 1)
+    {
+     belite += bet[betAr] * multi[pozeAr0];
+    cateBeliteAm;
+     cateBeliteAm = "Ai Atatea Belite: ";
+     cateBeliteAm += std::to_string(belite);
+     textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
+     texChips = SDL_CreateTextureFromSurface(randat, textChips);  
+    }
+
+                //de terminat multiplier systemul ca bag pula mor
+
+
+
+
+
 
 SDL_RenderClear(randat);
-SDL_Rect whores0;
-whores0.h = 200;
-whores0.w = 200;
-whores0.x = 420;
-whores0.y = 550;
-SDL_Rect whores1;
-whores1.h = 200;
-whores1.w = 200;
-whores1.x = 940;
-whores1.y = 550;
-SDL_Rect whores2;
-whores2.h = 200;
-whores2.w = 200;
-whores2.x = 1380;
-whores2.y = 550;
-SDL_Rect whoresText;
-whoresText.h = 75;
-whoresText.w = 500;
-whoresText.x = 260;
-whoresText.y = 240;
-SDL_Rect randClip;
-randClip.h = 1080;
-randClip.w = 1920;
-randClip.x = 0;
-randClip.y = 0;
+    SDL_Rect whores0;
+        whores0.h = 200;
+        whores0.w = 200;
+        whores0.x = 420;
+        whores0.y = 550;
+    SDL_Rect whores1;
+        whores1.h = 200;
+        whores1.w = 200;
+        whores1.x = 940;
+        whores1.y = 550;
+    SDL_Rect whores2;
+        whores2.h = 200;
+        whores2.w = 200;
+        whores2.x = 1380;
+        whores2.y = 550;
+    SDL_Rect whoresText;
+        whoresText.h = 75;
+        whoresText.w = 500;
+        whoresText.x = 260;
+        whoresText.y = 240;
+    SDL_Rect randClip;
+        randClip.h = 1080;
+        randClip.w = 1920;
+        randClip.x = 0;
+        randClip.y = 0;
+    
+    SDL_Rect whoresBet;
+        whoresBet.h = 200;
+        whoresBet.w = 400;
+        whoresBet.x = 20;
+        whoresBet.y = 20;
+
+    SDL_Rect textWin;
+        textWin.h = 200;
+        textWin.w = 200;
+        textWin.x = 700;
+        textWin.y = 550; 
+
+
 
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
@@ -172,10 +265,12 @@ SDL_FreeSurface(framesClipInfo);
 framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 SDL_RenderCopy(randat, textureClip, NULL, &randClip);
-SDL_RenderCopy(randat, pizdeBune[2], NULL, &whores0);
-SDL_RenderCopy(randat, pizdeBune[6], NULL, &whores1);
-SDL_RenderCopy(randat, pizdeBune[8], NULL, &whores2);
+SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
+SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
+SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
 SDL_RenderCopy(randat, texChips, NULL, &whoresText);
+SDL_RenderCopy(randat, texBet, NULL, &whoresBet);
+SDL_RenderCopy(randat, textureWin, NULL, &textWin);
 SDL_RenderPresent(randat);
 
 }
