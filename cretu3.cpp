@@ -19,14 +19,6 @@ uint32_t deltaF = 0;
 uint32_t durataF = 1000/350;
 
 
-/*int bani()
-{
-    int chips = 50000;
-    int multiplier[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
-    int bet[5] = {250, 500, 1000, 2500, };
-    
-}*/
-
 uint8_t clipRawOut[4 * 640 * 360];
 Uint32 waitTime = 50;
 uint8_t clipPacRawOut1[4 * 374 * 112];
@@ -56,7 +48,7 @@ int main()
     //rez clip 640x360
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
-
+    /*
     FILE * clipOutPac1;
     clipOutPac1 = fopen("clipDesfranat/pacVid/outPac1.bin", "rb");
     fread(clipPacRawOut1, 1, 3 * 374 * 112, clipOutPac1);
@@ -70,7 +62,7 @@ int main()
     FILE * clipOutPac3;
     clipOutPac3 = fopen("clipDesfranat/pacVid/outPac3.bin", "rb");
     fread(clipPacRawOut3, 1, 3 * 374 * 112, clipOutPac3);
-    if(!clipOutPac3) std::cout << "mori3" << std::endl;
+    if(!clipOutPac3) std::cout << "mori3" << std::endl;*/
 
     SDL_Texture *pizdeBune[9] ={};
     SDL_Window *pizdePng;
@@ -105,7 +97,7 @@ int main()
     SDL_Texture * textureClip;
     textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 
-    SDL_Rect pac1;
+   /* SDL_Rect pac1;
     SDL_Surface * clipPac1;
     clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac1;
@@ -122,7 +114,7 @@ int main()
     clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac3;
     texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
-
+*/
 
 //de updatat citirea
 //de terminat clipPac
@@ -167,6 +159,8 @@ while(1 == 1)
 {
     break;   
 }
+    
+
     if(pimp.type == SDL_KEYDOWN)
     {
     apasareDeTaste = false;
@@ -187,6 +181,7 @@ while(1 == 1)
                  apasareDeTaste != true;
                  if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_RETURN)
                  {
+                            if(belite <= 0) return 0;
                      std::cout << "penis" << std::endl;
                     SDL_DestroyTexture(texChips);
                      SDL_FreeSurface(textChips);
@@ -238,8 +233,23 @@ while(1 == 1)
                     
                     textelBet = TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 192, 123});
                     texBet = SDL_CreateTextureFromSurface(randat, textelBet);
-                 }
-            }   
+                }
+                if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_f)
+                {
+                          if(fps == 15)
+                        {
+                            fps = 350;
+                            durataF = 1000/350;            
+                        }
+                        else if(fps == 350)
+                        {
+                            fps = 15;
+                            durataF = 1000/15;
+                        }
+                                  
+                } 
+            }  
+
 
     }
     if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
@@ -256,13 +266,14 @@ while(1 == 1)
     
         if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2 && ifBet == false)     
         {    ifBet = true;
-             std::cout << "dai la muie iresponsabil" << std::endl;
+             std::cout << "dai la muie responsabil" << std::endl;
              belite += bet[betAr] * multi[pozeAr0];
              cateBeliteAm;
              cateBeliteAm = "Ai Atatea Belite: ";
              cateBeliteAm += std::to_string(belite);
              textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
              texChips = SDL_CreateTextureFromSurface(randat, textChips);  
+
         }       
 
 SDL_RenderClear(randat);
@@ -304,7 +315,7 @@ SDL_RenderClear(randat);
         textWin.x = 700;
         textWin.y = 550; 
 
-    SDL_Rect pac1 ;
+ /*   SDL_Rect pac1 ;
         pac1.h = 200;
         pac1.w = 200;
         pac1.x = 420;
@@ -322,7 +333,7 @@ SDL_RenderClear(randat);
         pac3.x = 1380;
         pac3.y = 550;         
 
-
+*/
 
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
@@ -339,9 +350,9 @@ SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
 SDL_RenderCopy(randat, texChips, NULL, &whoresText);
 SDL_RenderCopy(randat, texBet, NULL, &whoresBet);
 SDL_RenderCopy(randat, textureWin, NULL, &textWin);
-SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
+/*SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
 SDL_RenderCopy(randat, texClipPac2, NULL, &pac2);
-SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
+SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);*/
 SDL_RenderPresent(randat);
 startTimeF = endTimeF;
 endTimeF = SDL_GetTicks();
