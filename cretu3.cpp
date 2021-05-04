@@ -10,7 +10,7 @@
 
 
 bool ifBet = false;
-bool apasareDeTaste;
+bool apasareDeTaste; 
 int belite;
 int fps = 350;
 uint32_t startTimeF = 0;
@@ -24,7 +24,9 @@ Uint32 waitTime = 50;
 uint8_t clipPacRawOut1[4 * 374 * 112];
 uint8_t clipPacRawOut2[4 * 374 * 112];
 uint8_t clipPacRawOut3[4 * 374 * 112];
-
+std::chrono::system_clock::time_point timepointEnter1;
+std::chrono::system_clock::time_point timepointEnter2;
+std::chrono::system_clock::time_point timepointEnter3;
 
 
 
@@ -115,12 +117,7 @@ int main()
     clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac3;
     texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
-
-
-//de updatat citirea
-//de terminat clipPac
-
-    
+ 
     SDL_Rect whoresBet;
      SDL_Surface *textelBet;
      std::string textel1Bet = "Bet Nenorocit: ";
@@ -201,7 +198,9 @@ while(1 == 1)
                     surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
                     textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
                     ifBet = false;
-
+                    timepointEnter1 = std::chrono::system_clock::now();
+                    timepointEnter2 = std::chrono::system_clock::now();
+                    timepointEnter3 = std::chrono::system_clock::now();
                  }
                 else if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_LEFT)
                  {
@@ -253,6 +252,7 @@ while(1 == 1)
 
 
     }
+
     if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
     {
         
@@ -351,18 +351,27 @@ textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 }
 SDL_DestroyTexture(texClipPac1);
 SDL_FreeSurface(clipPac1);
-clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32 , 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32 , 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac1);
-// de terminat spin
-//de facut spin bine
+
     if(fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2) == 0)
 {
     fseek(clipOutPac2, 167552 * 0, SEEK_SET);
 }
+SDL_DestroyTexture(texClipPac2);
+SDL_FreeSurface(clipPac2);
+clipPac2 = SDL_CreateRGBSurfaceFrom(clipPacRawOut2, 374, 112, 32 , 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+texClipPac2 = SDL_CreateTextureFromSurface(randat, clipPac2);
+
     if(fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3) == 0)
 {
     fseek(clipOutPac3, 167552 * 0, SEEK_SET);
 }
+SDL_DestroyTexture(texClipPac3);
+SDL_FreeSurface(clipPac3);
+clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32 , 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
+
 SDL_RenderCopy(randat, textureClip, NULL, &randClip);
 SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
 SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
@@ -377,6 +386,10 @@ SDL_RenderPresent(randat);
 startTimeF = endTimeF;
 endTimeF = SDL_GetTicks();
 
+{
+//de term chrono ca olaru nu e in stare sa monster
+//e pizda;
+}
 }
     for(int i = 0; i <= 8; i++)
     {
