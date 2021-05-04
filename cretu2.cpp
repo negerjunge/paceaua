@@ -150,7 +150,7 @@ int main()
     static const char *video_dst_filename = NULL;
     int ret = 0, got_frame;
 
-    src_filename = "vid.mp4";
+    src_filename = "porn.mp4";
     video_dst_filename = "asdf";
     /* register all formats and codecs */
 	
@@ -225,7 +225,7 @@ end:
     IMG_Init(IMG_INIT_PNG);
     for(int i = 1; i <= 9 ; i++)
     {
-      std::string folderPoze = "/home/theasspounder/vsc/pacaneav2/paceaua/pozePacaneaDesfranata/";
+      std::string folderPoze = "pozePacaneaDesfranata/";
       folderPoze = folderPoze + std::to_string(i) + ".png"; 
       SDL_Surface *lemonParty = IMG_Load(folderPoze.c_str());
       if(!lemonParty) std::cout << "pulaMea" << std::endl;

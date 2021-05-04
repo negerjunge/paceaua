@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <error.h>
-
+#include <filesystem>
 
 
 
@@ -29,7 +29,8 @@ uint8_t clipPacRawOut3[4 * 374 * 112];
 
 
 int main()
-{
+{ 
+    std::filesystem::path("windows") /"runWindows";
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
     int betAr = 0;
@@ -48,7 +49,7 @@ int main()
     //rez clip 640x360
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
-    /*
+    
     FILE * clipOutPac1;
     clipOutPac1 = fopen("clipDesfranat/pacVid/outPac1.bin", "rb");
     fread(clipPacRawOut1, 1, 3 * 374 * 112, clipOutPac1);
@@ -62,7 +63,7 @@ int main()
     FILE * clipOutPac3;
     clipOutPac3 = fopen("clipDesfranat/pacVid/outPac3.bin", "rb");
     fread(clipPacRawOut3, 1, 3 * 374 * 112, clipOutPac3);
-    if(!clipOutPac3) std::cout << "mori3" << std::endl;*/
+    if(!clipOutPac3) std::cout << "mori3" << std::endl;
 
     SDL_Texture *pizdeBune[9] ={};
     SDL_Window *pizdePng;
@@ -97,7 +98,7 @@ int main()
     SDL_Texture * textureClip;
     textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 
-   /* SDL_Rect pac1;
+    SDL_Rect pac1;
     SDL_Surface * clipPac1;
     clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac1;
@@ -114,7 +115,7 @@ int main()
     clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac3;
     texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
-*/
+
 
 //de updatat citirea
 //de terminat clipPac
@@ -315,7 +316,7 @@ SDL_RenderClear(randat);
         textWin.x = 700;
         textWin.y = 550; 
 
- /*   SDL_Rect pac1 ;
+    SDL_Rect pac1 ;
         pac1.h = 200;
         pac1.w = 200;
         pac1.x = 420;
@@ -333,7 +334,7 @@ SDL_RenderClear(randat);
         pac3.x = 1380;
         pac3.y = 550;         
 
-*/
+
 
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
@@ -350,9 +351,9 @@ SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
 SDL_RenderCopy(randat, texChips, NULL, &whoresText);
 SDL_RenderCopy(randat, texBet, NULL, &whoresBet);
 SDL_RenderCopy(randat, textureWin, NULL, &textWin);
-/*SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
+SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
 SDL_RenderCopy(randat, texClipPac2, NULL, &pac2);
-SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);*/
+SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
 SDL_RenderPresent(randat);
 startTimeF = endTimeF;
 endTimeF = SDL_GetTicks();
