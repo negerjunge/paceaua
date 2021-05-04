@@ -52,17 +52,17 @@ int main()
     
     FILE * clipOutPac1;
     clipOutPac1 = fopen("clipDesfranat/pacVid/outPac1.bin", "rb");
-    fread(clipPacRawOut1, 1, 3 * 374 * 112, clipOutPac1);
+    fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1);
     if(!clipOutPac1) std::cout << "mori1" << std::endl;
 
     FILE * clipOutPac2;
     clipOutPac2 = fopen("clipDesfranat/pacVid/outPac2.bin", "rb");
-    fread(clipPacRawOut2, 1, 3 * 374 * 112, clipOutPac2);
+    fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2);
     if(!clipOutPac2) std::cout << "mori2" << std::endl;
 
     FILE * clipOutPac3;
     clipOutPac3 = fopen("clipDesfranat/pacVid/outPac3.bin", "rb");
-    fread(clipPacRawOut3, 1, 3 * 374 * 112, clipOutPac3);
+    fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3);
     if(!clipOutPac3) std::cout << "mori3" << std::endl;
 
     SDL_Texture *pizdeBune[9] ={};
@@ -108,7 +108,7 @@ int main()
     SDL_Surface * clipPac2;
     clipPac2 = SDL_CreateRGBSurfaceFrom(clipPacRawOut2, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture * texClipPac2;
-    texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac2);
+    texClipPac2 = SDL_CreateTextureFromSurface(randat, clipPac2);
 
     SDL_Rect pac3;
     SDL_Surface * clipPac3;
@@ -344,6 +344,25 @@ SDL_DestroyTexture(textureClip);
 SDL_FreeSurface(framesClipInfo);
 framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
+
+    if(fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1) == 0)
+{
+    fseek(clipOutPac1, 167552 * 0, SEEK_SET);
+}
+SDL_DestroyTexture(texClipPac1);
+SDL_FreeSurface(clipPac1);
+clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32 , 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac1);
+// de terminat spin
+//de facut spin bine
+    if(fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2) == 0)
+{
+    fseek(clipOutPac2, 167552 * 0, SEEK_SET);
+}
+    if(fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3) == 0)
+{
+    fseek(clipOutPac3, 167552 * 0, SEEK_SET);
+}
 SDL_RenderCopy(randat, textureClip, NULL, &randClip);
 SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
 SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
