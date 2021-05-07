@@ -83,7 +83,7 @@ int main()
     SDL_Rect whores;
      TTF_Init();
      TTF_Font *fontChips;
-     fontChips = TTF_OpenFont("/usr/share/fonts/hack/Hack-Bold.ttf", 15);
+     fontChips = TTF_OpenFont("fonts/Hack-Bold.ttf", 15);
      SDL_Surface *textChips;
      std::string cateBeliteAm;
      cateBeliteAm = "Ai Atatea Belite: ";
