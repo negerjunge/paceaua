@@ -6,8 +6,7 @@
 #include <cstdio>
 #include <error.h>
 #include <filesystem>
-
-
+#include <chrono>
 
 bool ifBet = false;
 bool apasareDeTaste; 
@@ -17,8 +16,6 @@ uint32_t startTimeF = 0;
 uint32_t endTimeF = 0;
 uint32_t deltaF = 0;
 uint32_t durataF = 1000/350;
-
-
 uint8_t clipRawOut[4 * 640 * 360];
 Uint32 waitTime = 50;
 uint8_t clipPacRawOut1[4 * 374 * 112];
@@ -27,7 +24,9 @@ uint8_t clipPacRawOut3[4 * 374 * 112];
 std::chrono::system_clock::time_point timepointEnter1;
 std::chrono::system_clock::time_point timepointEnter2;
 std::chrono::system_clock::time_point timepointEnter3;
-
+std::chrono::system_clock::time_point timepointEnter12;
+std::chrono::system_clock::time_point timepointEnter23;
+std::chrono::system_clock::time_point timepointEnter34;
 
 
 int main()
@@ -42,13 +41,11 @@ int main()
     int multi[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
     
     srand(time(NULL));
-    
 
     FILE * clipOutput;
     clipOutput = fopen("clipDesfranat/out.bin", "rb"); 
     if(!clipOutput) std::cout << "pulapizda" << std::endl;
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
-    //rez clip 640x360
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     
@@ -134,8 +131,6 @@ int main()
      SDL_Texture *textureWin;
      textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
 
-
-
 while(1 == 1)
 {
     if(startTimeF == 0)
@@ -157,7 +152,6 @@ while(1 == 1)
 {
     break;   
 }
-    
 
     if(pimp.type == SDL_KEYDOWN)
     {
@@ -167,7 +161,6 @@ while(1 == 1)
                      apasareDeTaste = true;
                  }
     }
-    
     
     if(pimp.type == SDL_KEYUP)
     {
@@ -186,7 +179,6 @@ while(1 == 1)
                      belite -= bet[betAr];
                     cateBeliteAm = "Ai Atatea Belite: ";
                     cateBeliteAm  += std::to_string(belite);
-                    
                     textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
                     texChips = SDL_CreateTextureFromSurface(randat, textChips);
                     pozeAr0 = rand() % 9;
@@ -201,6 +193,7 @@ while(1 == 1)
                     timepointEnter1 = std::chrono::system_clock::now();
                     timepointEnter2 = std::chrono::system_clock::now();
                     timepointEnter3 = std::chrono::system_clock::now();
+                    std::cout << "timepoint" << std::endl;
                  }
                 else if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_LEFT)
                  {
@@ -214,7 +207,6 @@ while(1 == 1)
                     SDL_FreeSurface(textelBet);
                     textel1Bet = "Bet Nenorocit: ";
                     textel1Bet += std::to_string(bet[betAr]); 
-                    
                     textelBet = TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 192, 123});
                     texBet = SDL_CreateTextureFromSurface(randat, textelBet);
                  }
@@ -249,9 +241,7 @@ while(1 == 1)
                                   
                 } 
             }  
-
-
-    }
+        }
 
     if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
     {
@@ -334,8 +324,6 @@ SDL_RenderClear(randat);
         pac3.x = 1380;
         pac3.y = 550;         
 
-
-
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
     fseek(clipOutput, 921600 * 45, SEEK_SET);
@@ -372,6 +360,10 @@ SDL_FreeSurface(clipPac3);
 clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32 , 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
 
+timepointEnter12 = std::chrono::system_clock::now();
+timepointEnter23 = std::chrono::system_clock::now();
+timepointEnter34 = std::chrono::system_clock::now();
+
 SDL_RenderCopy(randat, textureClip, NULL, &randClip);
 SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
 SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
@@ -379,17 +371,22 @@ SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
 SDL_RenderCopy(randat, texChips, NULL, &whoresText);
 SDL_RenderCopy(randat, texBet, NULL, &whoresBet);
 SDL_RenderCopy(randat, textureWin, NULL, &textWin);
-SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
-SDL_RenderCopy(randat, texClipPac2, NULL, &pac2);
-SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
+if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter12 - timepointEnter1).count() < 1000)
+{
+    SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
+}
+if(std::chrono::duration_cast<std::chrono::seconds>(timepointEnter23 - timepointEnter2).count() < 2)
+{
+    SDL_RenderCopy(randat, texClipPac2, NULL, &pac2);
+}
+if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() < 3000)
+{
+    SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
+}
 SDL_RenderPresent(randat);
 startTimeF = endTimeF;
 endTimeF = SDL_GetTicks();
 
-{
-//de term chrono ca olaru nu e in stare sa monster
-//e pizda;
-}
 }
     for(int i = 0; i <= 8; i++)
     {
