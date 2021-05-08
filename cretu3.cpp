@@ -31,7 +31,7 @@ std::chrono::system_clock::time_point timepointEnter34;
 
 int main()
 { 
-    std::filesystem::path("windows") /"runWindows";
+    using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
     int betAr = 0;
@@ -43,24 +43,24 @@ int main()
     srand(time(NULL));
 
     FILE * clipOutput;
-    clipOutput = fopen("clipDesfranat/out.bin", "rb"); 
+    clipOutput = fopen((path("clipDesfranat")/"out.bin").c_str(), "rb");
     if(!clipOutput) std::cout << "pulapizda" << std::endl;
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     
     FILE * clipOutPac1;
-    clipOutPac1 = fopen("clipDesfranat/pacVid/outPac1.bin", "rb");
+    clipOutPac1 = fopen((path("clipDesfranat")/("pacVid")/"outPac1.bin").c_str(), "rb");
     fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1);
     if(!clipOutPac1) std::cout << "mori1" << std::endl;
 
     FILE * clipOutPac2;
-    clipOutPac2 = fopen("clipDesfranat/pacVid/outPac2.bin", "rb");
+    clipOutPac2 = fopen((path("clipDesfranat")/("pacVid")/"outPac2.bin").c_str(), "rb");
     fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2);
     if(!clipOutPac2) std::cout << "mori2" << std::endl;
 
     FILE * clipOutPac3;
-    clipOutPac3 = fopen("clipDesfranat/pacVid/outPac3.bin", "rb");
+    clipOutPac3 = fopen((path("clipDesfranat")/("pacVid")/"outPac3.bin").c_str(), "rb");
     fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3);
     if(!clipOutPac3) std::cout << "mori3" << std::endl;
 
@@ -73,8 +73,8 @@ int main()
     IMG_Init(IMG_INIT_PNG);
     for(int i = 1; i <= 9 ; i++)
     {
-      std::string folderPoze = "pozePacaneaDesfranata/";
-      folderPoze = folderPoze + std::to_string(i) + ".png"; 
+      std::string folderPoze = path("pozePacaneaDesfranata")/(std::to_string(i) + ".png");
+      //folderPoze = folderPoze + std::to_string(i) + ".png"; 
       SDL_Surface *lemonParty = IMG_Load(folderPoze.c_str());
       if(!lemonParty) std::cout << "pulaMea" << std::endl;
        pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
@@ -83,7 +83,7 @@ int main()
     SDL_Rect whores;
      TTF_Init();
      TTF_Font *fontChips;
-     fontChips = TTF_OpenFont("fonts/Hack-Bold.ttf", 15);
+     fontChips = TTF_OpenFont((path("fonts")/("Hack-Bold.ttf")).c_str(), 15);
      SDL_Surface *textChips;
      std::string cateBeliteAm;
      cateBeliteAm = "Ai Atatea Belite: ";
