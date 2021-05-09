@@ -3,6 +3,14 @@
 #include <SDL2/SDL_image.h>
 #include <string>
 #include <SDL2/SDL_ttf.h>
+#define __STDC_CONSTANT_MACROS
+extern "C"
+{
+    #include <libavutil/imgutils.h>
+    #include <libavutil/samplefmt.h>
+    #include <libavutil/timestamp.h>
+    #include <libavformat/avformat.h>
+}
 #include <cstdio>
 #include <error.h>
 #include <filesystem>
@@ -28,6 +36,99 @@ std::chrono::system_clock::time_point timepointEnter12;
 std::chrono::system_clock::time_point timepointEnter23;
 std::chrono::system_clock::time_point timepointEnter34;
 
+/*static AVCodecContext *video_dec_ctx = NULL;
+static uint8_t *video_dst_data[4] = { NULL };
+static int video_dst_linesize[4];
+static int video_dst_bufsize;
+static int video_stream_idx = -1;
+static AVFrame *frame = NULL;
+static AVPacket pkt;
+
+static int decode_packet(int *got_frame, int cached)
+{
+    int ret = 0;
+    int decoded = pkt.size;
+    *got_frame = 0;
+    if (pkt.stream_index == video_stream_idx) {
+       
+        ret = avcodec_decode_video2(video_dec_ctx, frame, got_frame, &pkt);
+        if (ret < 0) {
+            fprintf(stderr, "Error decoding video frame \n");
+            return ret;
+        }
+        if (*got_frame) {
+            av_image_copy(video_dst_data, video_dst_linesize,
+                          (const uint8_t **)(frame->data), frame->linesize,
+                          video_dec_ctx->pix_fmt, video_dec_ctx->width, video_dec_ctx->height);
+            // aici se intampla sexul
+            // randat pe ecran
+        }
+    }
+    if (*got_frame)
+        av_frame_unref(frame);
+    return decoded;
+}
+static int open_codec_context(int *stream_idx,
+                              AVFormatContext *fmt_ctx, enum AVMediaType type, const char *src_filename)
+{
+    int ret;
+    AVStream *st;
+    AVCodecContext *dec_ctx = NULL;
+    AVCodec *dec = NULL;
+    AVDictionary *opts = NULL;
+    ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
+    if (ret < 0) {
+        fprintf(stderr, "Could not find %s stream in input file '%s'\n",
+                av_get_media_type_string(type), src_filename);
+        return ret;
+    } else {
+        *stream_idx = ret;
+        st = fmt_ctx->streams[*stream_idx];
+        
+        dec_ctx = st->codec;
+        dec = avcodec_find_decoder(dec_ctx->codec_id);
+        if (!dec) {
+            fprintf(stderr, "Failed to find %s codec\n",
+                    av_get_media_type_string(type));
+            return AVERROR(EINVAL);
+        }
+        
+        av_dict_set(&opts, "refcounted_frames", "1", 0);
+        if ((ret = avcodec_open2(dec_ctx, dec, &opts)) < 0) {
+            fprintf(stderr, "Failed to open %s codec\n",
+                    av_get_media_type_string(type));
+            return ret;
+        }
+    }
+    return 0;
+}
+
+static int get_format_from_sample_fmt(const char **fmt,
+                                      enum AVSampleFormat sample_fmt)
+{
+    int i;
+    struct sample_fmt_entry {
+        enum AVSampleFormat sample_fmt; const char *fmt_be, *fmt_le;
+    } sample_fmt_entries[] = {
+        { AV_SAMPLE_FMT_U8,  "u8",    "u8"    },
+        { AV_SAMPLE_FMT_S16, "s16be", "s16le" },
+        { AV_SAMPLE_FMT_S32, "s32be", "s32le" },
+        { AV_SAMPLE_FMT_FLT, "f32be", "f32le" },
+        { AV_SAMPLE_FMT_DBL, "f64be", "f64le" },
+    };
+    *fmt = NULL;
+    for (i = 0; i < FF_ARRAY_ELEMS(sample_fmt_entries); i++) {
+        struct sample_fmt_entry *entry = &sample_fmt_entries[i];
+        if (sample_fmt == entry->sample_fmt) {
+            *fmt = AV_NE(entry->fmt_be, entry->fmt_le);
+            return 0;
+        }
+    }
+    fprintf(stderr,
+            "sample format %s is not supported as output format\n",
+            av_get_sample_fmt_name(sample_fmt));
+    return -1;
+}*/
 
 int main()
 { 
@@ -80,6 +181,9 @@ int main()
        pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
        SDL_FreeSurface(lemonParty);
     }
+    
+
+
     SDL_Rect whores;
      TTF_Init();
      TTF_Font *fontChips;
@@ -97,6 +201,13 @@ int main()
     SDL_Texture * textureClip;
     textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 
+    SDL_Rect textPerformance;
+    SDL_Surface * surfTextPerf;
+    std::string stringTextPerf = "CHOOSE EXECUTION MODE: ";    
+    surfTextPerf = TTF_RenderText_Solid(fontChips, stringTextPerf.c_str(), {223, 194, 123});
+    SDL_Texture * texTextPerf;
+    texTextPerf = SDL_CreateTextureFromSurface(randat, surfTextPerf);
+    
     SDL_Rect pac1;
     SDL_Surface * clipPac1;
     clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
@@ -130,6 +241,35 @@ int main()
      surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
      SDL_Texture *textureWin;
      textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
+
+while(1 == 1)
+{
+SDL_Event pimp1;
+SDL_PollEvent(& pimp1);
+
+    if(pimp1.type == SDL_KEYDOWN)
+    {
+    apasareDeTaste = false;
+                if(pimp1.type == SDL_KEYDOWN)
+                 {
+                     apasareDeTaste = true;
+                 }
+    }
+    
+    if(pimp1.type == SDL_KEYUP)
+    {
+        (char)pimp1.key.keysym.sym;
+            if(apasareDeTaste == true)
+            {
+                 std::cout << (char)pimp1.key.keysym.sym << std::endl;
+                apasareDeTaste = false;
+                 apasareDeTaste != true;
+                 if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_UP)
+                 {
+                     //de fcaut selector performance
+                 }
+}
+    }
 
 while(1 == 1)
 {
@@ -268,6 +408,12 @@ while(1 == 1)
         }       
 
 SDL_RenderClear(randat);
+    SDL_Rect textPerformance;
+        textPerformance.h = 75;
+        textPerformance.w = 500;
+        textPerformance.x = 260;
+        textPerformance.y = 240;
+
     SDL_Rect whores0;
         whores0.h = 200;
         whores0.w = 200;
@@ -324,6 +470,7 @@ SDL_RenderClear(randat);
         pac3.x = 1380;
         pac3.y = 550;         
 
+SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
     fseek(clipOutput, 921600 * 45, SEEK_SET);
@@ -397,4 +544,5 @@ endTimeF = SDL_GetTicks();
     SDL_DestroyWindow(pizdePng);   
     SDL_Quit(); 
     return 0;
+}
 }
