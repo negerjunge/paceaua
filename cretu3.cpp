@@ -16,6 +16,7 @@ extern "C"
 #include <filesystem>
 #include <chrono>
 
+bool runMode = false;
 bool ifBet = false;
 bool apasareDeTaste; 
 int belite;
@@ -140,7 +141,7 @@ int main()
     int pozeAr1 = rand() % 9;
     int pozeAr2 = rand() % 9;
     int multi[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
-    
+
     srand(time(NULL));
 
     FILE * clipOutput;
@@ -244,8 +245,14 @@ int main()
 
 while(1 == 1)
 {
+    std::cout << "merge" << std::endl;
+
 SDL_Event pimp1;
 SDL_PollEvent(& pimp1);
+    if(pimp1.type == SDL_QUIT)    
+        {
+          break;   
+        }
 
     if(pimp1.type == SDL_KEYDOWN)
     {
@@ -266,11 +273,30 @@ SDL_PollEvent(& pimp1);
                  apasareDeTaste != true;
                  if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_UP)
                  {
-                     //de fcaut selector performance
+                    runMode = !runMode;
+                    std::cout << "runmode = true" << std::endl;
                  }
-}
+                 if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_DOWN)
+                 {
+                    runMode = !runMode;
+                 }
+                 if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_RETURN)
+                 {
+                     std::cout<< "break" << std::endl;
+                     break;
+                 }
+            }
     }
+    SDL_RenderClear(randat);
+     SDL_Rect textPerformance;
+        textPerformance.h = 75;
+        textPerformance.w = 500;
+        textPerformance.x = 260;
+        textPerformance.y = 240;
 
+    SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
+    SDL_RenderPresent(randat);
+}
 while(1 == 1)
 {
     if(startTimeF == 0)
@@ -408,12 +434,7 @@ while(1 == 1)
         }       
 
 SDL_RenderClear(randat);
-    SDL_Rect textPerformance;
-        textPerformance.h = 75;
-        textPerformance.w = 500;
-        textPerformance.x = 260;
-        textPerformance.y = 240;
-
+   
     SDL_Rect whores0;
         whores0.h = 200;
         whores0.w = 200;
@@ -470,7 +491,7 @@ SDL_RenderClear(randat);
         pac3.x = 1380;
         pac3.y = 550;         
 
-SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
+
 if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
 {
     fseek(clipOutput, 921600 * 45, SEEK_SET);
@@ -544,5 +565,4 @@ endTimeF = SDL_GetTicks();
     SDL_DestroyWindow(pizdePng);   
     SDL_Quit(); 
     return 0;
-}
 }
