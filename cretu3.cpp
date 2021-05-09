@@ -208,6 +208,13 @@ int main()
     surfTextPerf = TTF_RenderText_Solid(fontChips, stringTextPerf.c_str(), {223, 194, 123});
     SDL_Texture * texTextPerf;
     texTextPerf = SDL_CreateTextureFromSurface(randat, surfTextPerf);
+
+    SDL_Rect textPHP;
+    SDL_Surface * surfTextPHP;
+    std::string stringTextPHP = "High Performance Mode: 'On The Fly Decoding' ";
+    surfTextPHP == TTF_RenderText_Solid(fontChips, stringTextPHP.c_str(), {223, 194, 123});
+    SDL_Texture * texTextPHP;
+    texTextPHP = SDL_CreateTextureFromSurface(randat, surfTextPHP);
     
     SDL_Rect pac1;
     SDL_Surface * clipPac1;
@@ -293,8 +300,15 @@ SDL_PollEvent(& pimp1);
         textPerformance.w = 500;
         textPerformance.x = 260;
         textPerformance.y = 240;
+     
+     SDL_Rect textPHP;
+        textPHP.h = 100;
+        textPHP.w = 600;
+        textPHP.x = 400;
+        textPHP.y = 200;
 
     SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
+    SDL_RenderCopy(randat, texTextPHP, NULL, &textPHP);
     SDL_RenderPresent(randat);
 }
 while(1 == 1)
