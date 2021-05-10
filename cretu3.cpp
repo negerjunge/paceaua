@@ -131,6 +131,109 @@ static int get_format_from_sample_fmt(const char **fmt,
     return -1;
 }*/
 
+void set_pixel(SDL_Renderer *rend, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+	SDL_SetRenderDrawColor(rend, r,g,b,a);
+	SDL_RenderDrawPoint(rend, x, y);
+}
+
+void draw_circle(SDL_Renderer *surface, int n_cx, int n_cy, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+	// if the first pixel in the screen is represented by (0,0) (which is in sdl)
+	// remember that the beginning of the circle is not in the middle of the pixel
+	// but to the left-top from it:
+
+	double error = (double)-radius;
+	double x = (double)radius - 0.5;
+	double y = (double)0.5;
+	double cx = n_cx - 0.5;
+	double cy = n_cy - 0.5;
+
+	while (x >= y)
+	{
+		set_pixel(surface, (int)(cx + x), (int)(cy + y), r, g, b, a);
+		set_pixel(surface, (int)(cx + y), (int)(cy + x), r, g, b, a);
+
+		if (x != 0)
+		{
+			set_pixel(surface, (int)(cx - x), (int)(cy + y), r, g, b, a);
+			set_pixel(surface, (int)(cx + y), (int)(cy - x), r, g, b, a);
+		}
+
+		if (y != 0)
+		{
+			set_pixel(surface, (int)(cx + x), (int)(cy - y), r, g, b, a);
+			set_pixel(surface, (int)(cx - y), (int)(cy + x), r, g, b, a);
+		}
+
+		if (x != 0 && y != 0)
+		{
+			set_pixel(surface, (int)(cx - x), (int)(cy - y), r, g, b, a);
+			set_pixel(surface, (int)(cx - y), (int)(cy - x), r, g, b, a);
+		}
+
+		error += y;
+		++y;
+		error += y;
+
+		if (error >= 0)
+		{
+			--x;
+			error -= x;
+			error -= x;
+		}
+		/*
+		// sleep for debug
+		SDL_RenderPresent(gRenderer);
+		std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
+		*/
+	}
+}
+
+void fill_circle(SDL_Renderer *renderer, int cx, int cy, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+	// Note that there is more to altering the bitrate of this 
+	// method than just changing this value.  See how pixels are
+	// altered at the following web page for tips:
+	//   http://www.libsdl.org/intro.en/usingvideo.html
+	static const int BPP = 4;
+
+	//double ra = (double)radius;
+
+	for (double dy = 1; dy <= radius; dy += 1.0)
+	{
+		// This loop is unrolled a bit, only iterating through half of the
+		// height of the circle.  The result is used to draw a scan line and
+		// its mirror image below it.
+
+		// The following formula has been simplified from our original.  We
+		// are using half of the width of the circle because we are provided
+		// with a center and we need left/right coordinates.
+
+		double dx = floor(sqrt((2.0 * radius * dy) - (dy * dy)));
+		int x = cx - dx;
+		SDL_SetRenderDrawColor(renderer, r, g, b, a);
+		SDL_RenderDrawLine(renderer, cx - dx, cy + dy - radius, cx + dx, cy + dy - radius);
+		SDL_RenderDrawLine(renderer, cx - dx, cy - dy + radius, cx + dx, cy - dy + radius);
+
+		// Grab a pointer to the left-most pixel for each half of the circle
+		/*Uint8 *target_pixel_a = (Uint8 *)surface->pixels + ((int)(cy + r - dy)) * surface->pitch + x * BPP;
+		Uint8 *target_pixel_b = (Uint8 *)surface->pixels + ((int)(cy - r + dy)) * surface->pitch + x * BPP;
+		for (; x <= cx + dx; x++)
+		{
+			*(Uint32 *)target_pixel_a = pixel;
+			*(Uint32 *)target_pixel_b = pixel;
+			target_pixel_a += BPP;
+			target_pixel_b += BPP;
+		}*/
+		/*
+		// sleep for debug
+		SDL_RenderPresent(gRenderer);
+		std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
+		*/
+	}
+}
+
 int main()
 { 
     using namespace std::filesystem;
@@ -183,7 +286,7 @@ int main()
        SDL_FreeSurface(lemonParty);
     }
     
-
+    
 
     SDL_Rect whores;
      TTF_Init();
@@ -212,10 +315,17 @@ int main()
     SDL_Rect textPHP;
     SDL_Surface * surfTextPHP;
     std::string stringTextPHP = "High Performance Mode: 'On The Fly Decoding' ";
-    surfTextPHP == TTF_RenderText_Solid(fontChips, stringTextPHP.c_str(), {223, 194, 123});
+    surfTextPHP = TTF_RenderText_Solid(fontChips, stringTextPHP.c_str(), {223, 194, 123});
     SDL_Texture * texTextPHP;
     texTextPHP = SDL_CreateTextureFromSurface(randat, surfTextPHP);
     
+    SDL_Rect textPLP;
+    SDL_Surface * surfTextPLP;
+    std::string stringTextPLP = "Low Performance Mode: 'Normal Decoding(needs loading)' ";
+    surfTextPLP = TTF_RenderText_Solid(fontChips, stringTextPLP.c_str(), {223, 194, 123});
+    SDL_Texture * texTextPLP;
+    texTextPLP = SDL_CreateTextureFromSurface(randat, surfTextPLP);
+
     SDL_Rect pac1;
     SDL_Surface * clipPac1;
     clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
@@ -249,7 +359,7 @@ int main()
      surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
      SDL_Texture *textureWin;
      textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
-
+    SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
 while(1 == 1)
 {
     std::cout << "merge" << std::endl;
@@ -294,6 +404,7 @@ SDL_PollEvent(& pimp1);
                  }
             }
     }
+    SDL_SetRenderDrawColor(randat, 0, 0, 0, 255);
     SDL_RenderClear(randat);
      SDL_Rect textPerformance;
         textPerformance.h = 75;
@@ -305,11 +416,22 @@ SDL_PollEvent(& pimp1);
         textPHP.h = 100;
         textPHP.w = 600;
         textPHP.x = 400;
-        textPHP.y = 200;
+        textPHP.y = 500;
 
+     SDL_Rect textPLP;
+        textPLP.h = 100;
+        textPLP.w = 600;
+        textPLP.x = 400;
+        textPLP.y = 700;  
+
+    SDL_RenderCopy(randat, texTextPLP, NULL, &textPLP);
     SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
     SDL_RenderCopy(randat, texTextPHP, NULL, &textPHP);
+    SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
+    draw_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+    fill_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderPresent(randat);
+
 }
 while(1 == 1)
 {
