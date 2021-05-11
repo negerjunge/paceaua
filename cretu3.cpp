@@ -16,6 +16,8 @@ extern "C"
 #include <filesystem>
 #include <chrono>
 
+//de refacut decoder ul ca l a stricat lepra
+
 bool runMode = false;
 bool ifBet = false;
 bool apasareDeTaste; 
@@ -37,13 +39,14 @@ std::chrono::system_clock::time_point timepointEnter12;
 std::chrono::system_clock::time_point timepointEnter23;
 std::chrono::system_clock::time_point timepointEnter34;
 
-/*static AVCodecContext *video_dec_ctx = NULL;
+static AVCodecContext *video_dec_ctx = NULL;
 static uint8_t *video_dst_data[4] = { NULL };
 static int video_dst_linesize[4];
 static int video_dst_bufsize;
 static int video_stream_idx = -1;
 static AVFrame *frame = NULL;
 static AVPacket pkt;
+static FILE *video_dst_file;
 
 static int decode_packet(int *got_frame, int cached)
 {
@@ -51,7 +54,7 @@ static int decode_packet(int *got_frame, int cached)
     int decoded = pkt.size;
     *got_frame = 0;
     if (pkt.stream_index == video_stream_idx) {
-       
+        /* decode video frame */
         ret = avcodec_decode_video2(video_dec_ctx, frame, got_frame, &pkt);
         if (ret < 0) {
             fprintf(stderr, "Error decoding video frame \n");
@@ -61,8 +64,7 @@ static int decode_packet(int *got_frame, int cached)
             av_image_copy(video_dst_data, video_dst_linesize,
                           (const uint8_t **)(frame->data), frame->linesize,
                           video_dec_ctx->pix_fmt, video_dec_ctx->width, video_dec_ctx->height);
-            // aici se intampla sexul
-            // randat pe ecran
+            fwrite(frame->data, 1, 4 * video_dec_ctx->width * video_dec_ctx->height, video_dst_file);
         }
     }
     if (*got_frame)
@@ -85,7 +87,7 @@ static int open_codec_context(int *stream_idx,
     } else {
         *stream_idx = ret;
         st = fmt_ctx->streams[*stream_idx];
-        
+        /* find decoder for the stream */
         dec_ctx = st->codec;
         dec = avcodec_find_decoder(dec_ctx->codec_id);
         if (!dec) {
@@ -93,7 +95,7 @@ static int open_codec_context(int *stream_idx,
                     av_get_media_type_string(type));
             return AVERROR(EINVAL);
         }
-        
+        /* Init the decoders, with or without reference counting */
         av_dict_set(&opts, "refcounted_frames", "1", 0);
         if ((ret = avcodec_open2(dec_ctx, dec, &opts)) < 0) {
             fprintf(stderr, "Failed to open %s codec\n",
@@ -129,7 +131,8 @@ static int get_format_from_sample_fmt(const char **fmt,
             "sample format %s is not supported as output format\n",
             av_get_sample_fmt_name(sample_fmt));
     return -1;
-}*/
+}
+
 
 void set_pixel(SDL_Renderer *rend, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
@@ -216,26 +219,72 @@ void fill_circle(SDL_Renderer *renderer, int cx, int cy, int radius, Uint8 r, Ui
 		SDL_RenderDrawLine(renderer, cx - dx, cy + dy - radius, cx + dx, cy + dy - radius);
 		SDL_RenderDrawLine(renderer, cx - dx, cy - dy + radius, cx + dx, cy - dy + radius);
 
-		// Grab a pointer to the left-most pixel for each half of the circle
-		/*Uint8 *target_pixel_a = (Uint8 *)surface->pixels + ((int)(cy + r - dy)) * surface->pitch + x * BPP;
-		Uint8 *target_pixel_b = (Uint8 *)surface->pixels + ((int)(cy - r + dy)) * surface->pitch + x * BPP;
-		for (; x <= cx + dx; x++)
-		{
-			*(Uint32 *)target_pixel_a = pixel;
-			*(Uint32 *)target_pixel_b = pixel;
-			target_pixel_a += BPP;
-			target_pixel_b += BPP;
-		}*/
-		/*
-		// sleep for debug
-		SDL_RenderPresent(gRenderer);
-		std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
-		*/
 	}
 }
 
 int main()
 { 
+    static AVFormatContext *fmt_ctx = NULL;
+    static AVStream *video_stream = NULL;
+    static const char *src_filename = NULL;
+    static const char *video_dst_filename = NULL;
+    int ret = 0, got_frame;
+
+    src_filename = "clipDesfranat/porn.mp4";
+    video_dst_filename = "clip.out";
+    /* register all formats and codecs */
+    video_dst_file = fopen(video_dst_filename, "wb");
+	
+    /* open input file, and allocate format context */
+    if (avformat_open_input(&fmt_ctx, src_filename, NULL, NULL) < 0) {
+        fprintf(stderr, "Could not open source file %s\n", src_filename);
+        exit(1);
+    }
+    /* retrieve stream information */
+    if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+        fprintf(stderr, "Could not find stream information\n");
+        exit(1);
+    }
+    if (open_codec_context(&video_stream_idx, fmt_ctx, AVMEDIA_TYPE_VIDEO, src_filename) >= 0) {
+        video_stream = fmt_ctx->streams[video_stream_idx];
+        video_dec_ctx = video_stream->codec;
+        /* allocate image where the decoded image will be put */
+        ret = av_image_alloc(video_dst_data, video_dst_linesize,
+                             video_dec_ctx->width, video_dec_ctx->height,
+                             video_dec_ctx->pix_fmt, 1);
+        if (ret < 0) {
+            fprintf(stderr, "Could not allocate raw video buffer\n");
+            return 0;
+        }
+        video_dst_bufsize = ret;
+    }
+    av_dump_format(fmt_ctx, 0, src_filename, 0);
+    frame = av_frame_alloc();
+    if (!frame) {
+        fprintf(stderr, "Could not allocate frame\n");
+        ret = AVERROR(ENOMEM);
+        return 0;
+    }
+    av_init_packet(&pkt);
+    pkt.data = NULL;
+    pkt.size = 0;
+    while (av_read_frame(fmt_ctx, &pkt) >= 0) {
+        AVPacket orig_pkt = pkt;
+        do {
+            ret = decode_packet(&got_frame, 0);
+            if (ret < 0)
+                break;
+            pkt.data += ret;
+            pkt.size -= ret;
+        } while (pkt.size > 0);
+        av_free_packet(&orig_pkt);
+    }
+    pkt.data = NULL;
+    pkt.size = 0;
+    do {
+        decode_packet(&got_frame, 1);
+    } while (got_frame);
+
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -248,7 +297,7 @@ int main()
     srand(time(NULL));
 
     FILE * clipOutput;
-    clipOutput = fopen((path("clipDesfranat")/"out.bin").c_str(), "rb");
+    clipOutput = fopen("clip.out", "rb");
     if(!clipOutput) std::cout << "pulapizda" << std::endl;
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
@@ -362,8 +411,6 @@ int main()
     SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
 while(1 == 1)
 {
-    std::cout << "merge" << std::endl;
-
 SDL_Event pimp1;
 SDL_PollEvent(& pimp1);
     if(pimp1.type == SDL_QUIT)    
@@ -385,7 +432,6 @@ SDL_PollEvent(& pimp1);
         (char)pimp1.key.keysym.sym;
             if(apasareDeTaste == true)
             {
-                 std::cout << (char)pimp1.key.keysym.sym << std::endl;
                 apasareDeTaste = false;
                  apasareDeTaste != true;
                  if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_UP)
@@ -396,6 +442,7 @@ SDL_PollEvent(& pimp1);
                  if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_DOWN)
                  {
                     runMode = !runMode;
+                    std::cout << "runmode = false" << std::endl; 
                  }
                  if(pimp1.key.keysym.sym == SDL_KeyCode::SDLK_RETURN)
                  {
@@ -427,9 +474,18 @@ SDL_PollEvent(& pimp1);
     SDL_RenderCopy(randat, texTextPLP, NULL, &textPLP);
     SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
     SDL_RenderCopy(randat, texTextPHP, NULL, &textPHP);
-    SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
-    draw_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
-    fill_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+        if(runMode == false)
+        {
+        SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
+        draw_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+        fill_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+        }
+        if(runMode == true)
+        {
+           SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
+           draw_circle(randat, 300, 750, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+           fill_circle(randat, 300, 750, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+        }
     SDL_RenderPresent(randat);
 
 }
@@ -469,7 +525,6 @@ while(1 == 1)
         (char)pimp.key.keysym.sym;
             if(apasareDeTaste == true)
             {
-                 std::cout << (char)pimp.key.keysym.sym << std::endl;
                 apasareDeTaste = false;
                  apasareDeTaste != true;
                  if(pimp.key.keysym.sym == SDL_KeyCode::SDLK_RETURN)
