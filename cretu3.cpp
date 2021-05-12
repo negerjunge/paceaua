@@ -10,9 +10,11 @@ extern "C"
     #include <libavutil/samplefmt.h>
     #include <libavutil/timestamp.h>
     #include <libavformat/avformat.h>
+    #include<libswscale/swscale.h>
 }
 #include <cstdio>
 #include <error.h>
+#include<cstdlib>
 #include <filesystem>
 #include <chrono>
 
@@ -61,10 +63,46 @@ static int decode_packet(int *got_frame, int cached)
             return ret;
         }
         if (*got_frame) {
-            av_image_copy(video_dst_data, video_dst_linesize,
-                          (const uint8_t **)(frame->data), frame->linesize,
-                          video_dec_ctx->pix_fmt, video_dec_ctx->width, video_dec_ctx->height);
-            fwrite(frame->data, 1, 4 * video_dec_ctx->width * video_dec_ctx->height, video_dst_file);
+            size_t bitmap_size = 4 * video_dec_ctx->width * video_dec_ctx->height;
+            uint8_t *bitmap = (uint8_t *)malloc(bitmap_size);
+            int rgb_stride[4]={-(video_dec_ctx->width * 4), 0, 0, 0};
+            uint8_t *rgb_dest[4]= {bitmap + (video_dec_ctx->height - 1) * video_dec_ctx->width * 4, 0, 0, 0}; 
+
+            SwsContext* sws_ctx = sws_getContext(
+                video_dec_ctx->width, 
+                video_dec_ctx->height, 
+                video_dec_ctx->pix_fmt, 
+                video_dec_ctx->width, 
+                video_dec_ctx->height, 
+                AV_PIX_FMT_RGBA, 
+                SWS_AREA, 
+                0, 
+                0, 
+                0
+            ); 
+            sws_scale(
+                sws_ctx, 
+                frame->data, 
+                frame->linesize, 
+                0, 
+                video_dec_ctx->height,
+                rgb_dest, 
+                rgb_stride
+            );
+
+            uint8_t *rev = (uint8_t *)malloc(bitmap_size);
+            for(size_t i = 0; i < video_dec_ctx->height; ++i)
+            {
+                uint8_t *line = (uint8_t *)malloc(4 * video_dec_ctx->width);
+                memcpy(line, (bitmap + i * 4 * video_dec_ctx->width), 4 * video_dec_ctx->width);
+                memcpy((rev + bitmap_size - 4 * video_dec_ctx->width) - i * 4 * video_dec_ctx->width, line, 4 * video_dec_ctx->width);
+                free(line);
+            }
+
+            sws_freeContext(sws_ctx);
+            fwrite(rev, 1, 4 * video_dec_ctx->width * video_dec_ctx->height, video_dst_file);
+            free(rev);
+            free(bitmap);
         }
     }
     if (*got_frame)
