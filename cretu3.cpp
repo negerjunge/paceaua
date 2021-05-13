@@ -18,8 +18,6 @@ extern "C"
 #include <filesystem>
 #include <chrono>
 
-//de refacut decoder ul ca l a stricat lepra
-
 bool runMode = false;
 bool ifBet = false;
 bool apasareDeTaste; 
@@ -278,11 +276,14 @@ int main()
     int pozeAr1 = rand() % 9;
     int pozeAr2 = rand() % 9;
     int multi[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
+    uint8_t decoderClip[4 * 640 * 360];
 
     srand(time(NULL));
 
+// de facut clipul
+//de rezolvart decoderul
     FILE * clipOutput;
-    clipOutput = fopen("out.bin", "rb");
+    clipOutput = fopen("clip.out", "rb");
     if(!clipOutput) std::cout << "pulapizda" << std::endl;
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
@@ -476,9 +477,9 @@ SDL_PollEvent(& pimp1);
 
 }
 
-    if(runMode == false)
-    {
-    src_filename = "clipDesfranat/porn.mp4";
+if(runMode == true)
+{
+src_filename = "clipDesfranat/porn.mp4";
     video_dst_filename = "clip.out";
     /* register all formats and codecs */
     video_dst_file = fopen(video_dst_filename, "wb");
@@ -531,11 +532,17 @@ SDL_PollEvent(& pimp1);
     do {
         decode_packet(&got_frame, 1);
     } while (got_frame);
-    }
+    
 
-if(runMode == true)
+}
+
 while(1 == 1)
 {
+    if(runMode == false)
+    {
+
+    }
+
     if(startTimeF == 0)
     {
         startTimeF = SDL_GetTicks();
