@@ -32,6 +32,7 @@ Uint32 waitTime = 50;
 uint8_t clipPacRawOut1[4 * 374 * 112];
 uint8_t clipPacRawOut2[4 * 374 * 112];
 uint8_t clipPacRawOut3[4 * 374 * 112];
+uint8_t framesPerformance[4 * 640 * 360];
 std::chrono::system_clock::time_point timepointEnter1;
 std::chrono::system_clock::time_point timepointEnter2;
 std::chrono::system_clock::time_point timepointEnter3;
@@ -99,10 +100,13 @@ static int decode_packet(int *got_frame, int cached)
             }
 
             sws_freeContext(sws_ctx);
-            fwrite(rev, 1, 4 * video_dec_ctx->width * video_dec_ctx->height, video_dst_file);
+            memcpy(framesPerformance, rev, bitmap_size);
             free(rev);
             free(bitmap);
         }
+        //trebuie in main sa dau alea alea 
+        //sa tem decoder
+        // sa fac tot cu buuferul nou pth/l performance
     }
     if (*got_frame)
         av_frame_unref(frame);
@@ -280,50 +284,12 @@ int main()
 
     srand(time(NULL));
 
-// de facut clipul
-//de rezolvart decoderul
-    FILE * clipOutput;
-    clipOutput = fopen("clip.out", "rb");
-    if(!clipOutput) std::cout << "pulapizda" << std::endl;
-    fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
-    fseek(clipOutput, 921600 * 5, SEEK_CUR);
-    fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
-    
-    
-    FILE * clipOutPac1;
-    clipOutPac1 = fopen((path("clipDesfranat")/("pacVid")/"outPac1.bin").c_str(), "rb");
-    fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1);
-    if(!clipOutPac1) std::cout << "mori1" << std::endl;
-
-    FILE * clipOutPac2;
-    clipOutPac2 = fopen((path("clipDesfranat")/("pacVid")/"outPac2.bin").c_str(), "rb");
-    fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2);
-    if(!clipOutPac2) std::cout << "mori2" << std::endl;
-
-    FILE * clipOutPac3;
-    clipOutPac3 = fopen((path("clipDesfranat")/("pacVid")/"outPac3.bin").c_str(), "rb");
-    fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3);
-    if(!clipOutPac3) std::cout << "mori3" << std::endl;
-
-    SDL_Texture *pizdeBune[9] ={};
-    SDL_Window *pizdePng;
     SDL_Init(SDL_INIT_VIDEO);
-    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
     SDL_Renderer *randat = NULL;
-    randat = SDL_CreateRenderer(pizdePng, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Window *pizdePng;
+    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
     IMG_Init(IMG_INIT_PNG);
-    for(int i = 1; i <= 9 ; i++)
-    {
-      std::string folderPoze = path("pozePacaneaDesfranata")/(std::to_string(i) + ".png");
-      //folderPoze = folderPoze + std::to_string(i) + ".png"; 
-      SDL_Surface *lemonParty = IMG_Load(folderPoze.c_str());
-      if(!lemonParty) std::cout << "pulaMea" << std::endl;
-       pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
-       SDL_FreeSurface(lemonParty);
-    }
-    
-    
-
+    randat = SDL_CreateRenderer(pizdePng, -1, SDL_RENDERER_ACCELERATED);
     SDL_Rect whores;
      TTF_Init();
      TTF_Font *fontChips;
@@ -335,12 +301,7 @@ int main()
      textChips =  TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
      SDL_Texture *texChips;
      texChips = SDL_CreateTextureFromSurface(randat, textChips);
-    
-    SDL_Surface * framesClipInfo;
-    framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    SDL_Texture * textureClip;
-    textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
-
+   
     SDL_Rect textPerformance;
     SDL_Surface * surfTextPerf;
     std::string stringTextPerf = "CHOOSE EXECUTION MODE: ";    
@@ -360,42 +321,8 @@ int main()
     std::string stringTextPLP = "Low Performance Mode: 'Normal Decoding(needs loading)' ";
     surfTextPLP = TTF_RenderText_Solid(fontChips, stringTextPLP.c_str(), {223, 194, 123});
     SDL_Texture * texTextPLP;
-    texTextPLP = SDL_CreateTextureFromSurface(randat, surfTextPLP);
-
-    SDL_Rect pac1;
-    SDL_Surface * clipPac1;
-    clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    SDL_Texture * texClipPac1;
-    texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac1);
-
-    SDL_Rect pac2;
-    SDL_Surface * clipPac2;
-    clipPac2 = SDL_CreateRGBSurfaceFrom(clipPacRawOut2, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    SDL_Texture * texClipPac2;
-    texClipPac2 = SDL_CreateTextureFromSurface(randat, clipPac2);
-
-    SDL_Rect pac3;
-    SDL_Surface * clipPac3;
-    clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    SDL_Texture * texClipPac3;
-    texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
- 
-    SDL_Rect whoresBet;
-     SDL_Surface *textelBet;
-     std::string textel1Bet = "Bet Nenorocit: ";
-     textel1Bet += std::to_string(bet[betAr]);
-     textelBet =  TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 194, 123});
-     SDL_Texture *texBet;
-     texBet = SDL_CreateTextureFromSurface(randat, textelBet);
-
-     SDL_Rect textWin;
-     SDL_Surface *surfaceWin;
-     std::string stringWin = " ";
-     
-     surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
-     SDL_Texture *textureWin;
-     textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
-    SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
+    texTextPLP = SDL_CreateTextureFromSurface(randat, surfTextPLP); 
+    
 while(1 == 1)
 {
 SDL_Event pimp1;
@@ -536,13 +463,83 @@ src_filename = "clipDesfranat/porn.mp4";
 
 }
 
+
+FILE * clipOutput;
+    clipOutput = fopen("clip.out", "rb");
+    if(!clipOutput) std::cout << "pulapizda" << std::endl;
+    fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
+    fseek(clipOutput, 921600 * 5, SEEK_CUR);
+    fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
+    
+    
+    FILE * clipOutPac1;
+    clipOutPac1 = fopen((path("clipDesfranat")/("pacVid")/"outPac1.bin").c_str(), "rb");
+    fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1);
+    if(!clipOutPac1) std::cout << "mori1" << std::endl;
+
+    FILE * clipOutPac2;
+    clipOutPac2 = fopen((path("clipDesfranat")/("pacVid")/"outPac2.bin").c_str(), "rb");
+    fread(clipPacRawOut2, 1, 4 * 374 * 112, clipOutPac2);
+    if(!clipOutPac2) std::cout << "mori2" << std::endl;
+
+    FILE * clipOutPac3;
+    clipOutPac3 = fopen((path("clipDesfranat")/("pacVid")/"outPac3.bin").c_str(), "rb");
+    fread(clipPacRawOut3, 1, 4 * 374 * 112, clipOutPac3);
+    if(!clipOutPac3) std::cout << "mori3" << std::endl;
+
+    SDL_Texture *pizdeBune[9] ={};
+    for(int i = 1; i <= 9 ; i++)
+    {
+      std::string folderPoze = path("pozePacaneaDesfranata")/(std::to_string(i) + ".png");
+      //folderPoze = folderPoze + std::to_string(i) + ".png"; 
+      SDL_Surface *lemonParty = IMG_Load(folderPoze.c_str());
+      if(!lemonParty) std::cout << "pulaMea" << std::endl;
+       pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
+       SDL_FreeSurface(lemonParty);
+    }
+    
+    SDL_Surface * framesClipInfo;
+    framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Texture * textureClip;
+    textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
+
+    SDL_Rect pac1;
+    SDL_Surface * clipPac1;
+    clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Texture * texClipPac1;
+    texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac1);
+
+    SDL_Rect pac2;
+    SDL_Surface * clipPac2;
+    clipPac2 = SDL_CreateRGBSurfaceFrom(clipPacRawOut2, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Texture * texClipPac2;
+    texClipPac2 = SDL_CreateTextureFromSurface(randat, clipPac2);
+
+    SDL_Rect pac3;
+    SDL_Surface * clipPac3;
+    clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Texture * texClipPac3;
+    texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
+ 
+    SDL_Rect whoresBet;
+     SDL_Surface *textelBet;
+     std::string textel1Bet = "Bet Nenorocit: ";
+     textel1Bet += std::to_string(bet[betAr]);
+     textelBet =  TTF_RenderText_Solid(fontChips, textel1Bet.c_str(), {223, 194, 123});
+     SDL_Texture *texBet;
+     texBet = SDL_CreateTextureFromSurface(randat, textelBet);
+
+     SDL_Rect textWin;
+     SDL_Surface *surfaceWin;
+     std::string stringWin = " ";
+     
+     surfaceWin =  TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
+     SDL_Texture *textureWin;
+     textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
+    SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
+
 while(1 == 1)
 {
-    if(runMode == false)
-    {
-
-    }
-
     if(startTimeF == 0)
     {
         startTimeF = SDL_GetTicks();
@@ -735,8 +732,64 @@ SDL_RenderClear(randat);
         pac3.y = 550;         
 
 
-//de facut logica decode runMode
-//de term treaba aia buna din berlin
+
+if(runMode == false)
+{
+    src_filename = "clipDesfranat/porn.mp4";
+   
+ /* open input file, and allocate format context */
+    if (avformat_open_input(&fmt_ctx, src_filename, NULL, NULL) < 0) {
+        fprintf(stderr, "Could not open source file %s\n", src_filename);
+        exit(1);
+    }
+    /* retrieve stream information */
+    if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+        fprintf(stderr, "Could not find stream information\n");
+        exit(1);
+    }
+    if (open_codec_context(&video_stream_idx, fmt_ctx, AVMEDIA_TYPE_VIDEO, src_filename) >= 0) {
+        video_stream = fmt_ctx->streams[video_stream_idx];
+        video_dec_ctx = video_stream->codec;
+        /* allocate image where the decoded image will be put */
+        ret = av_image_alloc(video_dst_data, video_dst_linesize,
+                             video_dec_ctx->width, video_dec_ctx->height,
+                             video_dec_ctx->pix_fmt, 1);
+        if (ret < 0) {
+            fprintf(stderr, "Could not allocate raw video buffer\n");
+            return 0;
+        }
+       
+    }
+    av_dump_format(fmt_ctx, 0, src_filename, 0);
+    frame = av_frame_alloc();
+    if (!frame) {
+        fprintf(stderr, "Could not allocate frame\n");
+        ret = AVERROR(ENOMEM);
+        return 0;
+    }
+    av_init_packet(&pkt);
+    pkt.data = NULL;
+    pkt.size = 0;
+    while (av_read_frame(fmt_ctx, &pkt) >= 0) {
+        AVPacket orig_pkt = pkt;
+        do {
+            ret = decode_packet(&got_frame, 0);
+            if (ret < 0)
+                break;
+            pkt.data += ret;
+            pkt.size -= ret;
+        } while (pkt.size > 0);
+        av_free_packet(&orig_pkt);
+    }
+    pkt.data = NULL;
+    pkt.size = 0;
+    do {
+        decode_packet(&got_frame, 1);
+    } while (got_frame);
+    
+}
+
+
 if(runMode == true)
  {   if(fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
     {
