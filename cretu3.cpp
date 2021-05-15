@@ -463,7 +463,8 @@ int main()
                     break;
                 pkt.data += ret;
                 pkt.size -= ret;
-                fwrite(framesPerformance, 1, 4 * 640 * 360,  );
+                fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
+                
             } while (pkt.size > 0);
             av_free_packet(&orig_pkt);
         }
@@ -472,7 +473,9 @@ int main()
         do
         {
             decode_packet(&got_frame, 1);
+            fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
         } while (got_frame);
+        fclose(video_dst_file);
     }
 
     FILE *clipOutput;
