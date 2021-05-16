@@ -28,6 +28,7 @@ uint32_t endTimeF = 0;
 uint32_t deltaF = 0;
 uint32_t durataF = 1000 / 350;
 uint8_t clipRawOut[4 * 640 * 360];
+uint8_t clipPerf[4 * 640 * 360];
 Uint32 waitTime = 50;
 uint8_t clipPacRawOut1[4 * 374 * 112];
 uint8_t clipPacRawOut2[4 * 374 * 112];
@@ -104,10 +105,8 @@ static int decode_packet(int *got_frame, int cached)
             free(rev);
             free(bitmap);
         }
-        //trebuie in main sa dau alea alea
-        //sa tem decoder
-        // sa fac tot cu buuferul nou pth/l performance
     }
+
     if (*got_frame)
         av_frame_unref(frame);
     return decoded;
@@ -371,6 +370,8 @@ int main()
                 }
             }
         }
+// de facut tot
+
         SDL_SetRenderDrawColor(randat, 0, 0, 0, 255);
         SDL_RenderClear(randat);
         SDL_Rect textPerformance;
@@ -523,7 +524,6 @@ int main()
         pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
         SDL_FreeSurface(lemonParty);
     }
-
     SDL_Surface *framesClipInfo;
     framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture *textureClip;
@@ -569,25 +569,9 @@ int main()
         //de gasit problema cu ffmpeg
         //futelas
         /* open input file, and allocate format context */
-            if (avformat_open_input(&fmt_ctx, src_filename, NULL, NULL) < 0)
-            {
-                fprintf(stderr, "Could not open source file %s\n", src_filename);
-                exit(1);
-            }
-            /* retrieve stream information */
-            if (avformat_find_stream_info(fmt_ctx, NULL) < 0)
-            {
-                fprintf(stderr, "Could not find stream information\n");
-                exit(1);
-            }
-            if (open_codec_context(&video_stream_idx, fmt_ctx, AVMEDIA_TYPE_VIDEO, src_filename) >= 0)
-            {
-                video_stream = fmt_ctx->streams[video_stream_idx];
-                video_dec_ctx = video_stream->codec;
-                /* allocate image where the decoded image will be put */
-                ret = av_image_alloc(video_dst_data, video_dst_linesize,
-                                     video_dec_ctx->width, video_dec_ctx->height,
-                                     video_dec_ctx->pix_fmt, 1);
+        if(runMode == false)
+        {
+       
                 if (ret < 0)
                 {
                     fprintf(stderr, "Could not allocate raw video buffer\n");
@@ -605,6 +589,7 @@ int main()
             av_init_packet(&pkt);
             pkt.data = NULL;
             pkt.size = 0;
+        }
 
         if (startTimeF == 0)
         {
