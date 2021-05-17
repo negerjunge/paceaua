@@ -269,14 +269,63 @@ void fill_circle(SDL_Renderer *renderer, int cx, int cy, int radius, Uint8 r, Ui
     }
 }
 
+static AVFormatContext *fmt_ctx = NULL;
+static AVStream *video_stream = NULL;
+static const char *src_filename = NULL;
+static const char *video_dst_filename = NULL;
+int ret = 0, got_frame;
+
+void ffmpeg_init()
+{
+    /* open input file, and allocate format context */
+    if (avformat_open_input(&fmt_ctx, src_filename, NULL, NULL) < 0)
+    {
+        fprintf(stderr, "Could not open source file %s\n", src_filename);
+        exit(1);
+    }
+    /* retrieve stream information */
+    if (avformat_find_stream_info(fmt_ctx, NULL) < 0)
+    {
+        fprintf(stderr, "Could not find stream information\n");
+        exit(1);
+    }
+    if (open_codec_context(&video_stream_idx, fmt_ctx, AVMEDIA_TYPE_VIDEO, src_filename) >= 0)
+    {
+        video_stream = fmt_ctx->streams[video_stream_idx];
+        video_dec_ctx = video_stream->codec;
+        /* allocate image where the decoded image will be put */
+        ret = av_image_alloc(video_dst_data, video_dst_linesize,
+                             video_dec_ctx->width, video_dec_ctx->height,
+                             video_dec_ctx->pix_fmt, 1);
+        if (ret < 0)
+        {
+            fprintf(stderr, "Could not allocate raw video buffer\n");
+            return;
+        }
+        video_dst_bufsize = ret;
+    }
+    av_dump_format(fmt_ctx, 0, src_filename, 0);
+    frame = av_frame_alloc();
+    if (!frame)
+    {
+        fprintf(stderr, "Could not allocate frame\n");
+        ret = AVERROR(ENOMEM);
+        return;
+    }
+    av_init_packet(&pkt);
+    pkt.data = NULL;
+    pkt.size = 0;
+}
+
+void ffmpeg_free()
+{
+    av_frame_free(&frame);
+    av_free_packet(&pkt);
+    avformat_close_input(&fmt_ctx);
+}
+
 int main()
 {
-    static AVFormatContext *fmt_ctx = NULL;
-    static AVStream *video_stream = NULL;
-    static const char *src_filename = NULL;
-    static const char *video_dst_filename = NULL;
-    int ret = 0, got_frame;
-
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -288,6 +337,9 @@ int main()
     uint8_t decoderClip[4 * 640 * 360];
 
     srand(time(NULL));
+
+    src_filename = "clipDesfranat/porn.mp4";
+    ffmpeg_init();
 
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Renderer *randat = NULL;
@@ -327,7 +379,7 @@ int main()
     surfTextPLP = TTF_RenderText_Solid(fontChips, stringTextPLP.c_str(), {223, 194, 123});
     SDL_Texture *texTextPLP;
     texTextPLP = SDL_CreateTextureFromSurface(randat, surfTextPLP);
-    
+
     while (1 == 1)
     {
         SDL_Event pimp1;
@@ -370,7 +422,7 @@ int main()
                 }
             }
         }
-// de facut tot
+        // de facut tot
 
         SDL_SetRenderDrawColor(randat, 0, 0, 0, 255);
         SDL_RenderClear(randat);
@@ -412,48 +464,9 @@ int main()
 
     if (runMode == true)
     {
-        src_filename = "clipDesfranat/porn.mp4";
         video_dst_filename = "clip.out";
         /* register all formats and codecs */
         video_dst_file = fopen(video_dst_filename, "wb");
-        /* open input file, and allocate format context */
-        if (avformat_open_input(&fmt_ctx, src_filename, NULL, NULL) < 0)
-        {
-            fprintf(stderr, "Could not open source file %s\n", src_filename);
-            exit(1);
-        }
-        /* retrieve stream information */
-        if (avformat_find_stream_info(fmt_ctx, NULL) < 0)
-        {
-            fprintf(stderr, "Could not find stream information\n");
-            exit(1);
-        }
-        if (open_codec_context(&video_stream_idx, fmt_ctx, AVMEDIA_TYPE_VIDEO, src_filename) >= 0)
-        {
-            video_stream = fmt_ctx->streams[video_stream_idx];
-            video_dec_ctx = video_stream->codec;
-            /* allocate image where the decoded image will be put */
-            ret = av_image_alloc(video_dst_data, video_dst_linesize,
-                                 video_dec_ctx->width, video_dec_ctx->height,
-                                 video_dec_ctx->pix_fmt, 1);
-            if (ret < 0)
-            {
-                fprintf(stderr, "Could not allocate raw video buffer\n");
-                return 0;
-            }
-            video_dst_bufsize = ret;
-        }
-        av_dump_format(fmt_ctx, 0, src_filename, 0);
-        frame = av_frame_alloc();
-        if (!frame)
-        {
-            fprintf(stderr, "Could not allocate frame\n");
-            ret = AVERROR(ENOMEM);
-            return 0;
-        }
-        av_init_packet(&pkt);
-        pkt.data = NULL;
-        pkt.size = 0;
         while (av_read_frame(fmt_ctx, &pkt) >= 0)
         {
             AVPacket orig_pkt = pkt;
@@ -464,13 +477,12 @@ int main()
                     break;
                 pkt.data += ret;
                 pkt.size -= ret;
-                if(got_frame)
+                if (got_frame)
                 {
-                fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
+                    fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
                 }
-            }
-             while (pkt.size > 0);
-             
+            } while (pkt.size > 0);
+
             av_free_packet(&orig_pkt);
         }
 
@@ -479,9 +491,9 @@ int main()
         do
         {
             decode_packet(&got_frame, 1);
-            if(got_frame)
+            if (got_frame)
             {
-            fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
+                fwrite(framesPerformance, 1, 4 * 640 * 360, video_dst_file);
             }
         } while (got_frame);
         fclose(video_dst_file);
@@ -491,9 +503,12 @@ int main()
     clipOutput = fopen("clip.out", "rb");
     if (!clipOutput)
         std::cout << "pulapizda" << std::endl;
-    fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
+    else
+    {
+        fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
     fseek(clipOutput, 921600 * 5, SEEK_CUR);
     fread(clipRawOut, 1, 4 * 640 * 360, clipOutput);
+    }
 
     FILE *clipOutPac1;
     clipOutPac1 = fopen((path("clipDesfranat") / ("pacVid") / "outPac1.bin").c_str(), "rb");
@@ -566,30 +581,6 @@ int main()
 
     while (1 == 1)
     {
-        //de gasit problema cu ffmpeg
-        //futelas
-        /* open input file, and allocate format context */
-        if(runMode == false)
-        {
-       
-                if (ret < 0)
-                {
-                    fprintf(stderr, "Could not allocate raw video buffer\n");
-                    return 0;
-                }
-            }
-            av_dump_format(fmt_ctx, 0, src_filename, 0);
-            frame = av_frame_alloc();
-            if (!frame)
-            {
-                fprintf(stderr, "Could not allocate frame\n");
-                ret = AVERROR(ENOMEM);
-                return 0;
-            }
-            av_init_packet(&pkt);
-            pkt.data = NULL;
-            pkt.size = 0;
-        }
 
         if (startTimeF == 0)
         {
@@ -784,10 +775,7 @@ int main()
 
         if (runMode == false)
         {
-            src_filename = "clipDesfranat/porn.mp4";
-
-            
-            while (av_read_frame(fmt_ctx, &pkt) >= 0)
+            if(av_read_frame(fmt_ctx, &pkt) >= 0)
             {
                 AVPacket orig_pkt = pkt;
                 do
@@ -797,18 +785,19 @@ int main()
                         break;
                     pkt.data += ret;
                     pkt.size -= ret;
+                    if (got_frame)
+                    {
+                        SDL_DestroyTexture(textureClip);
+                        SDL_FreeSurface(framesClipInfo);
+                        framesClipInfo = SDL_CreateRGBSurfaceFrom(framesPerformance, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+                        textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
+                    }
                 } while (pkt.size > 0);
+                
                 av_free_packet(&orig_pkt);
             }
-            pkt.data = NULL;
-            pkt.size = 0;
-            do
-            {
-                decode_packet(&got_frame, 1);
-            } while (got_frame);
         }
-
-        if (runMode == true)
+        else
         {
             if (fread(clipRawOut, 1, 4 * 640 * 360, clipOutput) == 0)
             {
@@ -819,6 +808,7 @@ int main()
             framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
             textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
         }
+
         if (fread(clipPacRawOut1, 1, 4 * 374 * 112, clipOutPac1) == 0)
         {
             fseek(clipOutPac1, 167552 * 0, SEEK_SET);
@@ -849,7 +839,7 @@ int main()
         timepointEnter12 = std::chrono::system_clock::now();
         timepointEnter23 = std::chrono::system_clock::now();
         timepointEnter34 = std::chrono::system_clock::now();
-
+        
         SDL_RenderCopy(randat, textureClip, NULL, &randClip);
         SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
         SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
@@ -878,6 +868,7 @@ int main()
         SDL_DestroyTexture(pizdeBune[i]);
     }
 
+    ffmpeg_free();
     SDL_DestroyRenderer(randat);
     SDL_DestroyWindow(pizdePng);
     SDL_Quit();
