@@ -319,9 +319,8 @@ void ffmpeg_init()
 
 void ffmpeg_free()
 {
-    av_frame_free(&frame);
-    av_free_packet(&pkt);
     avformat_close_input(&fmt_ctx);
+    av_frame_free(&frame);
 }
 
 int main()
