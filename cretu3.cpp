@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <string>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #define __STDC_CONSTANT_MACROS
 extern "C"
 {
@@ -40,6 +41,7 @@ std::chrono::system_clock::time_point timepointEnter3;
 std::chrono::system_clock::time_point timepointEnter12;
 std::chrono::system_clock::time_point timepointEnter23;
 std::chrono::system_clock::time_point timepointEnter34;
+
 
 static AVCodecContext *video_dec_ctx = NULL;
 static uint8_t *video_dst_data[4] = {NULL};
@@ -340,6 +342,8 @@ int main()
     src_filename = "clipDesfranat/porn.mp4";
     ffmpeg_init();
 
+//baga sample audio ca te omor    
+    Mix_Init(MIX_INIT_MP3);
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
@@ -421,7 +425,7 @@ int main()
                 }
             }
         }
-        // de facut tot
+        
 
         SDL_SetRenderDrawColor(randat, 0, 0, 0, 255);
         SDL_RenderClear(randat);
@@ -871,5 +875,6 @@ int main()
     SDL_DestroyRenderer(randat);
     SDL_DestroyWindow(pizdePng);
     SDL_Quit();
+    Mix_Quit();
     return 0;
 }
