@@ -51,6 +51,7 @@ static int video_stream_idx = -1;
 static AVFrame *frame = NULL;
 static AVPacket pkt;
 static FILE *video_dst_file;
+static const char *sunetHit = "soundMixer/moan2.mp3";
 
 static int decode_packet(int *got_frame, int cached)
 {
@@ -327,6 +328,32 @@ void ffmpeg_free()
 
 int main()
 {
+    int result = 0;
+    int flags = MIX_INIT_MP3;
+
+    if(SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        std::cout << "Failed to init SDL" << std::endl;
+        exit(1);
+    }
+
+    if(flags != (result = Mix_Init(flags)))
+    {
+        std::cout << "Could not init mixer (result: &d)." << std::endl;
+        std::cout << "Mix_Init: %s" << Mix_GetError() << std::endl;
+        exit(1);
+    }
+
+    Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
+    Mix_Music *sunetHit = Mix_LoadMUS("soundMixer/moan2.mp3");
+    Mix_PlayMusic(sunetHit, 10);
+    while(!SDL_QuitRequested())
+    {
+        SDL_Delay(250);
+    }
+    Mix_FreeMusic(sunetHit);
+//de facut whileu 
+//atat
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -342,9 +369,10 @@ int main()
     src_filename = "clipDesfranat/porn.mp4";
     ffmpeg_init();
 
-//baga sample audio ca te omor    
-    Mix_Init(MIX_INIT_MP3);
+    
+    
     SDL_Init(SDL_INIT_VIDEO);
+    Mix_Init(MIX_INIT_MP3);
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
     pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
