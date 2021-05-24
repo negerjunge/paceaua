@@ -19,6 +19,9 @@ extern "C"
 #include <filesystem>
 #include <chrono>
 
+bool soundHit = false;
+bool soundHit1 = false;
+bool soundHit2 = false;
 bool runMode = false;
 bool ifBet = false;
 bool apasareDeTaste;
@@ -51,7 +54,6 @@ static int video_stream_idx = -1;
 static AVFrame *frame = NULL;
 static AVPacket pkt;
 static FILE *video_dst_file;
-static const char *sunetHit = "soundMixer/moan2.mp3";
 
 static int decode_packet(int *got_frame, int cached)
 {
@@ -330,30 +332,8 @@ int main()
 {
     int result = 0;
     int flags = MIX_INIT_MP3;
+   
 
-    if(SDL_Init(SDL_INIT_AUDIO) < 0)
-    {
-        std::cout << "Failed to init SDL" << std::endl;
-        exit(1);
-    }
-
-    if(flags != (result = Mix_Init(flags)))
-    {
-        std::cout << "Could not init mixer (result: &d)." << std::endl;
-        std::cout << "Mix_Init: %s" << Mix_GetError() << std::endl;
-        exit(1);
-    }
-
-    Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
-    Mix_Music *sunetHit = Mix_LoadMUS("soundMixer/moan2.mp3");
-    Mix_PlayMusic(sunetHit, 10);
-    while(!SDL_QuitRequested())
-    {
-        SDL_Delay(250);
-    }
-    Mix_FreeMusic(sunetHit);
-//de facut whileu 
-//atat
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -364,15 +344,15 @@ int main()
     int multi[9] = {5, 10, 25, 50, 100, 500, 1000, 5000, 10000};
     uint8_t decoderClip[4 * 640 * 360];
 
-    srand(time(NULL));
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     src_filename = "clipDesfranat/porn.mp4";
+    srand(time(NULL));
     ffmpeg_init();
-
     
-    
-    SDL_Init(SDL_INIT_VIDEO);
     Mix_Init(MIX_INIT_MP3);
+     Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
+    Mix_Music *sunetHit = Mix_LoadMUS("soundMixer/moan2.mp3");
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
     pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
@@ -671,9 +651,11 @@ int main()
                     textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
                     ifBet = false;
                     timepointEnter1 = std::chrono::system_clock::now();
+                    soundHit = true;
                     timepointEnter2 = std::chrono::system_clock::now();
+                    soundHit1 = true;
                     timepointEnter3 = std::chrono::system_clock::now();
-                    std::cout << "timepoint" << std::endl;
+                    soundHit2 = true;
                 }
                 else if (pimp.key.keysym.sym == SDL_KeyCode::SDLK_LEFT)
                 {
@@ -890,6 +872,30 @@ int main()
         {
             SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
         }
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter12 - timepointEnter1).count() > 1000)
+        {
+            if(soundHit == true)
+            {
+                Mix_PlayMusic(sunetHit, 1);
+                soundHit = false;
+            }
+        }
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter23 - timepointEnter2).count() > 2000)
+        {
+            if(soundHit1 == true)
+            {
+                Mix_PlayMusic(sunetHit, 1);
+                soundHit1 = false;
+            }
+        }
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() > 3000)
+        {
+            if(soundHit2 == true)
+            {
+                Mix_PlayMusic(sunetHit, 1);
+                soundHit2 = false;
+            }
+        }
         SDL_RenderPresent(randat);
         startTimeF = endTimeF;
         endTimeF = SDL_GetTicks();
@@ -906,3 +912,4 @@ int main()
     Mix_Quit();
     return 0;
 }
+//de facut sunet win
