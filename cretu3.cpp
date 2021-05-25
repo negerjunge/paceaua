@@ -353,6 +353,7 @@ int main()
     Mix_Init(MIX_INIT_MP3);
      Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
     Mix_Music *sunetHit = Mix_LoadMUS("soundMixer/moan2.mp3");
+    Mix_Music *sunetWin = Mix_LoadMUS("soundMixer/orgasm.mp3");
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
     pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
@@ -641,9 +642,9 @@ int main()
                     cateBeliteAm += std::to_string(belite);
                     textChips = TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
                     texChips = SDL_CreateTextureFromSurface(randat, textChips);
-                    pozeAr0 = rand() % 9;
-                    pozeAr1 = rand() % 9;
-                    pozeAr2 = rand() % 9;
+                    pozeAr0 = rand() % 1;
+                    pozeAr1 = rand() % 1;
+                    pozeAr2 = rand() % 1;
                     SDL_DestroyTexture(textureWin);
                     stringWin = " ";
                     SDL_FreeSurface(surfaceWin);
@@ -809,6 +810,11 @@ int main()
                 
                 av_free_packet(&orig_pkt);
             }
+            else
+            {
+                ffmpeg_free();
+                ffmpeg_init();
+            }
         }
         else
         {
@@ -895,6 +901,14 @@ int main()
                 Mix_PlayMusic(sunetHit, 1);
                 soundHit2 = false;
             }
+          
+        }
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() > 4000)
+        {
+            if (pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
+            {
+                Mix_PlayMusic(sunetWin, 1);
+            }//de facut logica la sunetWin
         }
         SDL_RenderPresent(randat);
         startTimeF = endTimeF;
@@ -912,4 +926,3 @@ int main()
     Mix_Quit();
     return 0;
 }
-//de facut sunet win
