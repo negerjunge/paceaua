@@ -22,6 +22,7 @@ extern "C"
 bool soundHit = false;
 bool soundHit1 = false;
 bool soundHit2 = false;
+bool soundWin = false;
 bool runMode = false;
 bool ifBet = false;
 bool apasareDeTaste;
@@ -657,6 +658,7 @@ int main()
                     soundHit1 = true;
                     timepointEnter3 = std::chrono::system_clock::now();
                     soundHit2 = true;
+                    soundWin = true;
                 }
                 else if (pimp.key.keysym.sym == SDL_KeyCode::SDLK_LEFT)
                 {
@@ -715,6 +717,7 @@ int main()
 
             surfaceWin = TTF_RenderText_Solid(fontChips, stringWin.c_str(), {223, 194, 123});
             textureWin = SDL_CreateTextureFromSurface(randat, surfaceWin);
+           
         }
 
         if (pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2 && ifBet == false)
@@ -903,12 +906,16 @@ int main()
             }
           
         }
-        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() > 4000)
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() > 3500)
         {
-            if (pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
+            if(soundWin == true)
             {
-                Mix_PlayMusic(sunetWin, 1);
-            }//de facut logica la sunetWin
+                if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
+                {
+                    Mix_PlayMusic(sunetWin, 1);
+                    soundWin = false;
+                }
+            }
         }
         SDL_RenderPresent(randat);
         startTimeF = endTimeF;
