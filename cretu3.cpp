@@ -19,6 +19,7 @@ extern "C"
 #include <filesystem>
 #include <chrono>
 
+ 
 bool soundHit = false;
 bool soundHit1 = false;
 bool soundHit2 = false;
@@ -333,8 +334,8 @@ int main()
 {
     int result = 0;
     int flags = MIX_INIT_MP3;
-   
-
+    //size_t dynamicHeight = SDL_GetWindowSize()
+    //size_t dynamicWidth = (size_t)GetSystemMetrics(SM_CYSCREEN);
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -357,7 +358,7 @@ int main()
     Mix_Music *sunetWin = Mix_LoadMUS("soundMixer/orgasm.mp3");
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
-    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 1920, 1080, SDL_WINDOW_SHOWN);
+    pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
     IMG_Init(IMG_INIT_PNG);
     randat = SDL_CreateRenderer(pizdePng, -1, SDL_RENDERER_ACCELERATED);
     SDL_Rect whores;
@@ -449,13 +450,13 @@ int main()
         textPHP.h = 100;
         textPHP.w = 600;
         textPHP.x = 400;
-        textPHP.y = 500;
+        textPHP.y = 400;
 
         SDL_Rect textPLP;
         textPLP.h = 100;
         textPLP.w = 600;
         textPLP.x = 400;
-        textPLP.y = 700;
+        textPLP.y = 600;
 
         SDL_RenderCopy(randat, texTextPLP, NULL, &textPLP);
         SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
@@ -463,14 +464,14 @@ int main()
         if (runMode == false)
         {
             SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
-            draw_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
-            fill_circle(randat, 300, 550, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            draw_circle(randat, 300, 450, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            fill_circle(randat, 300, 450, 30, 0xFF, 0xFF, 0xFF, 0xFF);
         }
         if (runMode == true)
         {
             SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
-            draw_circle(randat, 300, 750, 30, 0xFF, 0xFF, 0xFF, 0xFF);
-            fill_circle(randat, 300, 750, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            draw_circle(randat, 300, 650, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            fill_circle(randat, 300, 650, 30, 0xFF, 0xFF, 0xFF, 0xFF);
         }
         SDL_RenderPresent(randat);
     }
@@ -737,17 +738,17 @@ int main()
         SDL_Rect whores0;
         whores0.h = 200;
         whores0.w = 200;
-        whores0.x = 420;
+        whores0.x = 105;
         whores0.y = 550;
         SDL_Rect whores1;
         whores1.h = 200;
         whores1.w = 200;
-        whores1.x = 940;
+        whores1.x = 560;
         whores1.y = 550;
         SDL_Rect whores2;
         whores2.h = 200;
         whores2.w = 200;
-        whores2.x = 1380;
+        whores2.x = 1016;
         whores2.y = 550;
         SDL_Rect whoresText;
         whoresText.h = 75;
@@ -755,8 +756,8 @@ int main()
         whoresText.x = 260;
         whoresText.y = 240;
         SDL_Rect randClip;
-        randClip.h = 1080;
-        randClip.w = 1920;
+        randClip.h = 768;
+        randClip.w = 1366;
         randClip.x = 0;
         randClip.y = 0;
 
@@ -769,25 +770,25 @@ int main()
         SDL_Rect textWin;
         textWin.h = 200;
         textWin.w = 200;
-        textWin.x = 700;
-        textWin.y = 550;
+        textWin.x = 600;
+        textWin.y = 750;
 
         SDL_Rect pac1;
         pac1.h = 200;
         pac1.w = 200;
-        pac1.x = 420;
+        pac1.x = 105;
         pac1.y = 550;
 
         SDL_Rect pac2;
         pac2.h = 200;
         pac2.w = 200;
-        pac2.x = 940;
+        pac2.x = 560;
         pac2.y = 550;
 
         SDL_Rect pac3;
         pac3.h = 200;
         pac3.w = 200;
-        pac3.x = 1380;
+        pac3.x = 1016;
         pac3.y = 550;
 
         if (runMode == false)
