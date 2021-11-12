@@ -334,8 +334,8 @@ int main()
 {
     int result = 0;
     int flags = MIX_INIT_MP3;
-    //size_t dynamicHeight = SDL_GetWindowSize()
-    //size_t dynamicWidth = (size_t)GetSystemMetrics(SM_CYSCREEN);
+    int dynamicHeight;
+    int dynamicWidth;
     using namespace std::filesystem;
     int belite = 50000;
     int bet[4] = {250, 500, 1000, 2500};
@@ -352,14 +352,19 @@ int main()
     srand(time(NULL));
     ffmpeg_init();
     
+    
     Mix_Init(MIX_INIT_MP3);
      Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
     Mix_Music *sunetHit = Mix_LoadMUS("soundMixer/moan2.mp3");
     Mix_Music *sunetWin = Mix_LoadMUS("soundMixer/orgasm.mp3");
     SDL_Renderer *randat = NULL;
     SDL_Window *pizdePng;
+    
     pizdePng = SDL_CreateWindow("Pacanea Cu Desfranate", 0, 0, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
     IMG_Init(IMG_INIT_PNG);
+    SDL_GetWindowSize(pizdePng, &dynamicWidth, &dynamicHeight);
+    std::cout << dynamicHeight << std::endl;
+    std::cout << dynamicWidth <<std::endl;
     randat = SDL_CreateRenderer(pizdePng, -1, SDL_RENDERER_ACCELERATED);
     SDL_Rect whores;
     TTF_Init();
