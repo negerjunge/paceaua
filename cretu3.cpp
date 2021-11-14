@@ -563,19 +563,19 @@ int main()
     SDL_Texture *textureClip;
     textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
 
-    SDL_Rect pac1;
+    SDL_FRect pac1;
     SDL_Surface *clipPac1;
     clipPac1 = SDL_CreateRGBSurfaceFrom(clipPacRawOut1, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture *texClipPac1;
     texClipPac1 = SDL_CreateTextureFromSurface(randat, clipPac1);
 
-    SDL_Rect pac2;
+    SDL_FRect pac2;
     SDL_Surface *clipPac2;
     clipPac2 = SDL_CreateRGBSurfaceFrom(clipPacRawOut2, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture *texClipPac2;
     texClipPac2 = SDL_CreateTextureFromSurface(randat, clipPac2);
 
-    SDL_Rect pac3;
+    SDL_FRect pac3;
     SDL_Surface *clipPac3;
     clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
     SDL_Texture *texClipPac3;
@@ -761,8 +761,8 @@ int main()
         whoresText.x = 260;
         whoresText.y = 240;
         SDL_Rect randClip;
-        randClip.h = 768;
-        randClip.w = 1366;
+        randClip.h = dynamicHeight;
+        randClip.w = dynamicWidth;
         randClip.x = 0;
         randClip.y = 0;
 
@@ -778,22 +778,22 @@ int main()
         textWin.x = 600;
         textWin.y = 750;
 
-        SDL_Rect pac1;
+        SDL_FRect pac1;
         pac1.h = 200;
         pac1.w = 200;
-        pac1.x = 105;
+        pac1.x = (dynamicWidth - 200) / 0.6875;
         pac1.y = 550;
 
-        SDL_Rect pac2;
+        SDL_FRect pac2;
         pac2.h = 200;
         pac2.w = 200;
-        pac2.x = 560;
+        pac2.x = (dynamicWidth -200) / 1.375;
         pac2.y = 550;
 
-        SDL_Rect pac3;
+        SDL_FRect pac3;
         pac3.h = 200;
         pac3.w = 200;
-        pac3.x = 1016;
+        pac3.x = (dynamicWidth - 200) / 2.75;
         pac3.y = 550;
 
         if (runMode == false)
@@ -877,15 +877,15 @@ int main()
         SDL_RenderCopy(randat, textureWin, NULL, &textWin);
         if (std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter12 - timepointEnter1).count() < 1000)
         {
-            SDL_RenderCopy(randat, texClipPac1, NULL, &pac1);
+            SDL_RenderCopyF(randat, texClipPac1, NULL, &pac1);
         }
         if (std::chrono::duration_cast<std::chrono::seconds>(timepointEnter23 - timepointEnter2).count() < 2)
         {
-            SDL_RenderCopy(randat, texClipPac2, NULL, &pac2);
+            SDL_RenderCopyF(randat, texClipPac2, NULL, &pac2);
         }
         if (std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter34 - timepointEnter3).count() < 3000)
         {
-            SDL_RenderCopy(randat, texClipPac3, NULL, &pac3);
+            SDL_RenderCopyF(randat, texClipPac3, NULL, &pac3);
         }
         if(std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter12 - timepointEnter1).count() > 1000)
         {
