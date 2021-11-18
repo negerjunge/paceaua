@@ -25,6 +25,7 @@ bool soundHit1 = false;
 bool soundHit2 = false;
 bool soundWin = false;
 bool runMode = false;
+bool developerMode = false;
 bool ifBet = false;
 bool apasareDeTaste;
 int belite;
@@ -399,6 +400,15 @@ int main()
     SDL_Texture *texTextPLP;
     texTextPLP = SDL_CreateTextureFromSurface(randat, surfTextPLP);
 
+    SDL_Rect textDeveloper;
+    SDL_Surface *surfTextDeveloper;
+    std::string stringTextDeveloper = "Developer Mode: 'Does Not Render Bkg Clip(for testing in public)'";
+    surfTextDeveloper = TTF_RenderText_Solid(fontChips, stringTextDeveloper.c_str(), {223, 194, 123});
+    SDL_Texture *texTextDeveloper;
+    texTextDeveloper = SDL_CreateTextureFromSurface(randat, surfTextDeveloper);
+
+    //de refacut functia la tasta
+
     while (1 == 1)
     {
         SDL_Event pimp1;
@@ -407,6 +417,13 @@ int main()
         {
             break;
         }
+
+        if (pimp1.key.keysym.sym == SDL_KeyCode::SDLK_d)
+                {
+                    std::cout << "esti safe bro" << std::endl;
+                    developerMode = true;
+                    break;
+                }
 
         if (pimp1.type == SDL_KEYDOWN)
         {
@@ -558,10 +575,12 @@ int main()
         pizdeBune[i - 1] = SDL_CreateTextureFromSurface(randat, lemonParty);
         SDL_FreeSurface(lemonParty);
     }
-    SDL_Surface *framesClipInfo;
-    framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    SDL_Texture *textureClip;
-    textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
+    
+            SDL_Surface *framesClipInfo;
+            framesClipInfo = SDL_CreateRGBSurfaceFrom(clipRawOut, 640, 360, 32, 2560, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+            SDL_Texture *textureClip;
+            textureClip = SDL_CreateTextureFromSurface(randat, framesClipInfo);
+            
 
     SDL_FRect pac1;
     SDL_Surface *clipPac1;
@@ -745,26 +764,31 @@ int main()
         whores0.w = 200;
         whores0.x = 105;
         whores0.y = 550;
+
         SDL_Rect whores1;
         whores1.h = 200;
         whores1.w = 200;
         whores1.x = 560;
         whores1.y = 550;
+
         SDL_Rect whores2;
         whores2.h = 200;
         whores2.w = 200;
         whores2.x = 1016;
         whores2.y = 550;
+
         SDL_Rect whoresText;
         whoresText.h = 75;
         whoresText.w = 500;
         whoresText.x = 260;
         whoresText.y = 240;
+
         SDL_Rect randClip;
         randClip.h = dynamicHeight;
         randClip.w = dynamicWidth;
         randClip.x = 0;
         randClip.y = 0;
+        
 
         SDL_Rect whoresBet;
         whoresBet.h = 200;
@@ -868,7 +892,10 @@ int main()
         timepointEnter23 = std::chrono::system_clock::now();
         timepointEnter34 = std::chrono::system_clock::now();
         
-        SDL_RenderCopy(randat, textureClip, NULL, &randClip);
+        if(developerMode = false)
+        {
+            SDL_RenderCopy(randat, textureClip, NULL, &randClip);
+        }
         SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
         SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
         SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
