@@ -892,7 +892,7 @@ int main()
         timepointEnter23 = std::chrono::system_clock::now();
         timepointEnter34 = std::chrono::system_clock::now();
         
-        if(developerMode = false)
+        if(developerMode == false)
         {
             SDL_RenderCopy(randat, textureClip, NULL, &randClip);
         }
