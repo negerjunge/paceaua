@@ -18,6 +18,7 @@ extern "C"
 #include <cstdlib>
 #include <filesystem>
 #include <chrono>
+#include <cstdlib>
 
  
 bool soundHit = false;
@@ -402,7 +403,7 @@ int main()
 
     SDL_Rect textDeveloper;
     SDL_Surface *surfTextDeveloper;
-    std::string stringTextDeveloper = "Developer Mode: 'Does Not Render Bkg Clip(for testing in public)'";
+    std::string stringTextDeveloper = "Press D For Developer Mode: 'Does Not Render Bkg Clip(for testing in public)'";
     surfTextDeveloper = TTF_RenderText_Solid(fontChips, stringTextDeveloper.c_str(), {223, 194, 123});
     SDL_Texture *texTextDeveloper;
     texTextDeveloper = SDL_CreateTextureFromSurface(randat, surfTextDeveloper);
@@ -415,7 +416,7 @@ int main()
         SDL_PollEvent(&pimp1);
         if (pimp1.type == SDL_QUIT)
         {
-            break;
+            abort();
         }
 
         if (pimp1.key.keysym.sym == SDL_KeyCode::SDLK_d)
@@ -470,30 +471,38 @@ int main()
 
         SDL_Rect textPHP;
         textPHP.h = 100;
-        textPHP.w = 600;
-        textPHP.x = 400;
-        textPHP.y = 400;
+        textPHP.w = 700;
+        textPHP.x = dynamicWidth / 3.8;
+        textPHP.y = dynamicHeight / 1.9;
+        //de terminat rezolutiile
 
         SDL_Rect textPLP;
         textPLP.h = 100;
-        textPLP.w = 600;
-        textPLP.x = 400;
-        textPLP.y = 600;
+        textPLP.w = 700;
+        textPLP.x = dynamicWidth / 3.8;
+        textPLP.y = dynamicHeight / 1.35;
 
+        SDL_Rect textDeveloper;
+        textDeveloper.h = 25;
+        textDeveloper.w = 750;
+        textDeveloper.x = dynamicWidth - 2500 / 3;
+        textDeveloper.y = dynamicHeight - 100 / 3;
+
+        SDL_RenderCopy(randat, texTextDeveloper, NULL, &textDeveloper);
         SDL_RenderCopy(randat, texTextPLP, NULL, &textPLP);
         SDL_RenderCopy(randat, texTextPerf, NULL, &textPerformance);
         SDL_RenderCopy(randat, texTextPHP, NULL, &textPHP);
         if (runMode == false)
         {
             SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
-            draw_circle(randat, 300, 450, 30, 0xFF, 0xFF, 0xFF, 0xFF);
-            fill_circle(randat, 300, 450, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            draw_circle(randat, (dynamicWidth / 4.3), (dynamicHeight / 1.7), 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            fill_circle(randat, (dynamicWidth / 4.3), (dynamicHeight / 1.7), 30, 0xFF, 0xFF, 0xFF, 0xFF);
         }
         if (runMode == true)
         {
             SDL_SetRenderDrawColor(randat, 255, 255, 255, 255);
-            draw_circle(randat, 300, 650, 30, 0xFF, 0xFF, 0xFF, 0xFF);
-            fill_circle(randat, 300, 650, 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            draw_circle(randat, (dynamicWidth / 4.3), (dynamicHeight - 450 / 3), 30, 0xFF, 0xFF, 0xFF, 0xFF);
+            fill_circle(randat, (dynamicWidth / 4.3), (dynamicHeight - 450 / 3), 30, 0xFF, 0xFF, 0xFF, 0xFF);
         }
         SDL_RenderPresent(randat);
     }
