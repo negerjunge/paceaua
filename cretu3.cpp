@@ -474,7 +474,6 @@ int main()
         textPHP.w = 700;
         textPHP.x = dynamicWidth / 3.8;
         textPHP.y = dynamicHeight / 1.9;
-        //de terminat rezolutiile
 
         SDL_Rect textPLP;
         textPLP.h = 100;
@@ -677,9 +676,9 @@ int main()
                     cateBeliteAm += std::to_string(belite);
                     textChips = TTF_RenderText_Solid(fontChips, cateBeliteAm.c_str(), {223, 194, 123});
                     texChips = SDL_CreateTextureFromSurface(randat, textChips);
-                    pozeAr0 = rand() % 1;
-                    pozeAr1 = rand() % 1;
-                    pozeAr2 = rand() % 1;
+                    pozeAr0 = rand() % 9;
+                    pozeAr1 = rand() % 9;
+                    pozeAr2 = rand() % 9;
                     SDL_DestroyTexture(textureWin);
                     stringWin = " ";
                     SDL_FreeSurface(surfaceWin);
@@ -771,20 +770,20 @@ int main()
         SDL_Rect whores0;
         whores0.h = 200;
         whores0.w = 200;
-        whores0.x = 105;
-        whores0.y = 550;
+        whores0.x = (dynamicWidth - 1000) / 3;
+        whores0.y = dynamicHeight / 1.4;
 
         SDL_Rect whores1;
         whores1.h = 200;
         whores1.w = 200;
-        whores1.x = 560;
-        whores1.y = 550;
+        whores1.x = dynamicWidth / 2.4;
+        whores1.y = dynamicHeight / 1.4;
 
         SDL_Rect whores2;
         whores2.h = 200;
         whores2.w = 200;
-        whores2.x = 1016;
-        whores2.y = 550;
+        whores2.x = dynamicWidth / 1.3;
+        whores2.y = dynamicHeight / 1.4;
 
         SDL_Rect whoresText;
         whoresText.h = 75;
@@ -806,28 +805,28 @@ int main()
         whoresBet.y = 20;
 
         SDL_Rect textWin;
-        textWin.h = 200;
+        textWin.h = 100;
         textWin.w = 200;
-        textWin.x = 600;
-        textWin.y = 750;
+        textWin.x = dynamicWidth / 2.4;
+        textWin.y = dynamicHeight / 2;
 
         SDL_FRect pac1;
         pac1.h = 200;
         pac1.w = 200;
-        pac1.x = (dynamicWidth - 200) / 0.6875;
-        pac1.y = 550;
+        pac1.x = (dynamicWidth - 1000) / 3;;
+        pac1.y = dynamicHeight / 1.4;
 
         SDL_FRect pac2;
         pac2.h = 200;
         pac2.w = 200;
-        pac2.x = (dynamicWidth -200) / 1.375;
-        pac2.y = 550;
+        pac2.x = dynamicWidth / 2.4;
+        pac2.y = dynamicHeight / 1.4;
 
         SDL_FRect pac3;
         pac3.h = 200;
         pac3.w = 200;
-        pac3.x = (dynamicWidth - 200) / 2.75;
-        pac3.y = 550;
+        pac3.x = dynamicWidth / 1.3;
+        pac3.y = dynamicHeight / 1.4;
 
         if (runMode == false)
         {
