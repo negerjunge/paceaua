@@ -891,25 +891,37 @@ int main()
         {
             fseek(clipOutPac3, 167552 * 0, SEEK_SET);
         }
+
         SDL_DestroyTexture(texClipPac3);
+
         SDL_FreeSurface(clipPac3);
+
         clipPac3 = SDL_CreateRGBSurfaceFrom(clipPacRawOut3, 374, 112, 32, 4 * 374, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
         texClipPac3 = SDL_CreateTextureFromSurface(randat, clipPac3);
 
         timepointEnter12 = std::chrono::system_clock::now();
+
         timepointEnter23 = std::chrono::system_clock::now();
+
         timepointEnter34 = std::chrono::system_clock::now();
         
         if(developerMode == false)
         {
             SDL_RenderCopy(randat, textureClip, NULL, &randClip);
         }
+        
         SDL_RenderCopy(randat, pizdeBune[pozeAr0], NULL, &whores0);
+
         SDL_RenderCopy(randat, pizdeBune[pozeAr1], NULL, &whores1);
+
         SDL_RenderCopy(randat, pizdeBune[pozeAr2], NULL, &whores2);
+
         SDL_RenderCopy(randat, texChips, NULL, &whoresText);
+
         SDL_RenderCopy(randat, texBet, NULL, &whoresBet);
+
         SDL_RenderCopy(randat, textureWin, NULL, &textWin);
+
         if (std::chrono::duration_cast<std::chrono::milliseconds>(timepointEnter12 - timepointEnter1).count() < 1000)
         {
             SDL_RenderCopyF(randat, texClipPac1, NULL, &pac1);
@@ -927,6 +939,7 @@ int main()
             if(soundHit == true)
             {
                 Mix_PlayMusic(sunetHit, 1);
+
                 soundHit = false;
             }
         }
@@ -935,6 +948,7 @@ int main()
             if(soundHit1 == true)
             {
                 Mix_PlayMusic(sunetHit, 1);
+
                 soundHit1 = false;
             }
         }
@@ -943,6 +957,7 @@ int main()
             if(soundHit2 == true)
             {
                 Mix_PlayMusic(sunetHit, 1);
+
                 soundHit2 = false;
             }
           
@@ -954,23 +969,32 @@ int main()
                 if(pozeAr0 == pozeAr1 && pozeAr1 == pozeAr2)
                 {
                     Mix_PlayMusic(sunetWin, 1);
+
                     soundWin = false;
                 }
             }
         }
         SDL_RenderPresent(randat);
+
         startTimeF = endTimeF;
+
         endTimeF = SDL_GetTicks();
     }
+
     for (int i = 0; i <= 8; i++)
     {
         SDL_DestroyTexture(pizdeBune[i]);
     }
 
     ffmpeg_free();
+
     SDL_DestroyRenderer(randat);
+
     SDL_DestroyWindow(pizdePng);
+
     SDL_Quit();
+
     Mix_Quit();
+
     return 0;
 }
